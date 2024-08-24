@@ -1,0 +1,10 @@
+{
+  "name": "Raw HTTP",
+  "type": "module",
+  "scripts": {
+    "dev": "bun run app/main.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.11"
+  }
+}
