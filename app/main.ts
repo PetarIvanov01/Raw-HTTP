@@ -1,33 +1,18 @@
 import net from "net";
 import path from "path";
-import zlib from "zlib";
 import url from "url";
 import fs from "fs/promises";
+import zlib from "zlib";
 
-interface RequestLineOptions {
-  method: string;
-  pathname: string;
-}
+import { Request } from "./types";
 
-interface RequestHeadersOptions {
-  host: string;
-  userAgent: string;
-  accept: string;
-  contentType?: string;
-  contentLength?: number;
-  contentEncoding?: string;
-}
+import createResponse from "./utils/createHttpResponse";
 
-interface RequestBody {
-  body: any;
-}
-
-interface Request
-  extends RequestLineOptions,
-    RequestHeadersOptions,
-    RequestBody {
-  rawData: string;
-}
+import {
+  parseRequestBody,
+  parseRequestHeaders,
+  parseRequestLine,
+} from "./utils/parsers";
 
 console.log("------------");
 
@@ -202,145 +187,4 @@ function handleNotFound(socket: net.Socket) {
   socket.end(() => {
     console.log("Request is invalid - resource not found");
   });
-}
-
-// * Utils
-function parseRequestLine(requestData: string): RequestLineOptions {
-  const method = requestData.substring(0, 4).trim();
-
-  const regex = new RegExp(/\s+([^\s]+)\s+/);
-  const pathnameMatch = requestData.split("\r\n")[0].match(regex);
-
-  if (!pathnameMatch) {
-    throw new Error("Invalid pathname");
-  }
-
-  return {
-    method,
-    pathname: pathnameMatch[1],
-  };
-}
-
-function parseRequestHeaders(requestData: string): RequestHeadersOptions {
-  const VALID_ENCODINGS = ["gzip"];
-
-  const partsOfRequestData = requestData.split("\r\n");
-
-  const headersEndsIndex = partsOfRequestData.indexOf("");
-  const requestHeaders = partsOfRequestData.slice(1, headersEndsIndex);
-
-  const headersMap = new Map<string, string>();
-
-  for (const line of requestHeaders) {
-    const [headerName, ...headerValue] = line.split(":");
-    const normalizedHeaderName = headerName.trim().toLowerCase();
-    headersMap.set(normalizedHeaderName, headerValue.join(":").trim());
-  }
-
-  const host = headersMap.get("host");
-  const userAgent = headersMap.get("user-agent");
-  const accept = headersMap.get("accept");
-
-  const encodings = headersMap.get("accept-encoding")?.split(", ");
-  if (encodings) {
-    for (const e of encodings) {
-      if (VALID_ENCODINGS.includes(e.trim())) {
-        headersMap.set("accept-encoding", e);
-        break;
-      }
-      headersMap.delete("accept-encoding");
-    }
-  }
-
-  if (!host || !userAgent || !accept) {
-    throw new Error("Invalid request headers");
-  }
-
-  return {
-    host,
-    userAgent,
-    accept,
-    contentType: headersMap.get("content-type"),
-    contentLength: headersMap.get("content-length")
-      ? Number(headersMap.get("content-length"))
-      : undefined,
-    contentEncoding: headersMap.get("accept-encoding"),
-  };
-}
-
-function parseRequestBody(
-  requestData: string,
-  headers: RequestHeadersOptions
-): RequestBody {
-  const partsOfRequestData = requestData.split("\r\n");
-  const headersEndsIndex = partsOfRequestData.indexOf("");
-
-  const encoding = headers.contentEncoding;
-  let requestBody: string | Buffer =
-    partsOfRequestData.slice(headersEndsIndex)[1];
-
-  if (encoding && encoding === "gzip") {
-    requestBody = compressGzyp(requestBody);
-    headers.contentLength = requestBody.length;
-  }
-
-  return {
-    body: requestBody,
-  };
-}
-
-function createResponse(
-  statusNumber: number,
-  options?: {
-    contentType?: string;
-    contentLength?: number;
-    responseData?: string | Buffer;
-    contentEncoding?: string;
-  }
-) {
-  const statusMessages: Record<number, string> = {
-    200: "OK",
-    201: "Created",
-    204: "No Content",
-    400: "Bad Request",
-    401: "Unauthorized",
-    403: "Forbidden",
-    404: "Not Found",
-  };
-
-  let response = `HTTP/1.1 ${statusNumber} ${statusMessages[statusNumber]}\r\n`;
-
-  if (options) {
-    const { contentType, contentLength, responseData, contentEncoding } =
-      options;
-
-    if (contentType) {
-      response += `Content-Type: ${contentType}\r\n`;
-    }
-    console.log(options);
-
-    if (contentLength !== undefined) {
-      response += `Content-Length: ${contentLength}\r\n`;
-    } else if (responseData) {
-      response += `Content-Length: ${Buffer.byteLength(responseData)}\r\n`;
-    }
-
-    if (contentEncoding) {
-      response += `Content-Encoding: ${contentEncoding}\r\n`;
-    }
-
-    response += "\r\n";
-
-    if (responseData) {
-      response += responseData;
-    }
-  } else {
-    response += "\r\n";
-  }
-
-  return response;
-}
-
-function compressGzyp(str: string) {
-  return zlib.gzipSync(str);
 }
