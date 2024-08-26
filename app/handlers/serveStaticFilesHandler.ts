@@ -1,10 +1,10 @@
-import zlib from "zlib";
 import fs from "fs/promises";
+import path from "path";
 
 import { Request, Socket } from "../types";
 
 import createResponse from "../utils/createHttpResponse";
-import path from "path";
+import compressStaticFiles from "../utils/compr";
 
 const STATIC_PATH_DIR = path.join(process.cwd(), "public");
 
@@ -46,24 +46,10 @@ export default async function serveStaticFilesHandler(
     } catch (error) {
       console.error("Gzip compression error:", error);
       const response = createResponse(500);
-      socket.write(response);
-      socket.end();
+      socket.end(response);
       return;
     }
   } catch (error) {
     socket.end(createResponse(400));
   }
-}
-
-function compressStaticFiles(file: Buffer): Promise<Buffer> {
-  const promise = new Promise<Buffer>((resolve, reject) => {
-    zlib.gzip(file, (err, compressed) => {
-      if (err) {
-        reject(err);
-      }
-      resolve(compressed);
-    });
-  });
-
-  return promise;
 }
