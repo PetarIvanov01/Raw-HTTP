@@ -1,5 +1,14 @@
 import zlib from "zlib";
 
-export function compressGzyp(str: string) {
-  return zlib.gzipSync(str);
+export default function compressStaticFiles(file: Buffer): Promise<Buffer> {
+  const promise = new Promise<Buffer>((resolve, reject) => {
+    zlib.gzip(file, (err, compressed) => {
+      if (err) {
+        reject(err);
+      }
+      resolve(compressed);
+    });
+  });
+
+  return promise;
 }
