@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo App</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h1>Toodos</h1>
+        </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="#" class="active">Dashboard</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+
+    <main class="main-content">
+        <!-- Header -->
+        <header class="header">
+            <nav class="breadcrumb">
+                <a href="#">Dashboard</a> &gt;
+                <a href="#">Overview</a>
+            </nav>
+        </header>
+
+        <section class="todo-section">
+            <div class="todo-section-header">
+                <h2>My Todo</h2>
+
+                <div class="header-actions">
+                    <button class="btn new-task">+ New Task</button>
+                    <div class="profile-pic">
+                        <img src="svg/profile.svg" alt="User Profile">
+                    </div>
+                </div>
+            </div>
+            <div class="filters">
+                <input type="text" class="search-bar" placeholder="Search">
+                <div class="date-range">
+                    <input type="date" class="date-input">
+                    <span>to</span>
+                    <input type="date" class="date-input">
+                </div>
+            </div>
+
+            <div class="task-columns">
+                <!-- To Start Column -->
+                <div class="task-column">
+                    <h3><span class="dot blue"></span> To Start</h3>
+                    <div class="task-card">
+                        <h4>Title of the Task</h4>
+                        <p>Lorem Ipsum has been the industry's standard dummy text ever since the 1500s...</p>
+                        <div class="task-date">17/07/2024</div>
+                    </div>
+                    <!-- Add New Card -->
+                    <!-- <div class="add-new-card">
+                        <button>+ Add New</button>
+                    </div> -->
+                    <form class="add-task-form">
+                        <input type="text" placeholder="Title" class="task-input title-input">
+                        <textarea placeholder="Description" class="task-input description-input"></textarea>
+                        <button class="btn add-task-btn">Add Task</button>
+                    </form>
+                </div>
+
+                <!-- In Progress Column -->
+                <div class="task-column">
+                    <h3><span class="dot yellow"></span> In Progress</h3>
+                    <div class="task-card">
+                        <h4>Title of the Task</h4>
+                        <p>Lorem Ipsum has been the industry's standard dummy text ever since the 1500s...</p>
+                        <div class="task-date">17/07/2024</div>
+                    </div>
+                    <div class="task-card">
+                        <h4>Title of the Task</h4>
+                        <p>
+                            Lorem Ipsum has been the industry's standard dummy text ever since the 1500s... Lorem Ipsum
+                            has been the industry's standard dummy text ever since the 1500s...
+                            Lorem Ipsum has been the industry's standard dummy text ever since the 1500s...Lorem Ipsum
+                            has been the industry's standard dummy text ever since the 1500s...
+                            Lorem Ipsum has been the industry's standard dummy text ever since the 1500s...
+                            Lorem Ipsum has been the industry's standard dummy text ever since the 1500s...
+                            Lorem Ipsum has been the industry's standard dummy text ever since the 1500s...
+                        </p>
+                        <div class="task-date">17/07/2024</div>
+                    </div>
+                    <div class="task-card">
+                        <h4>Title of the Task</h4>
+                        <p>Lorem Ipsum has been the industry's standard dummy text ever since the 1500s...</p>
+                        <div class="task-date">17/07/2024</div>
+                    </div>
+
+                </div>
+
+                <!-- Completed Column -->
+                <div class="task-column">
+                    <h3><span class="dot green"></span> Completed</h3>
+                    <div class="task-card">
+                        <h4>Title of the Task</h4>
+                        <p>Lorem Ipsum has been the industry's standard dummy text ever since the 1500s...</p>
+                        <div class="task-date">17/07/2024</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+
+</html>
