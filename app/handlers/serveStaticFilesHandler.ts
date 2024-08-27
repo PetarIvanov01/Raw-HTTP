@@ -1,15 +1,16 @@
 import fs from "fs/promises";
 import path from "path";
 
-import { Request, Socket } from "../types";
+import { RequestStaticFiles, Socket } from "../types";
 
 import createResponse from "../utils/createHttpResponse";
 import compressStaticFiles from "../utils/compr";
+import { mimeType } from "../utils/mimeTypes";
 
 const STATIC_PATH_DIR = path.join(process.cwd(), "public");
 
 export default async function serveStaticFilesHandler(
-  req: Request,
+  req: RequestStaticFiles,
   socket: Socket
 ) {
   const pathname = req.pathname;
@@ -34,9 +35,10 @@ export default async function serveStaticFilesHandler(
         file = await compressStaticFiles(file);
       }
 
+      const contentType = mimeType[ext as keyof typeof mimeType];
       const response = createResponse(200, {
         contentEncoding: "gzip",
-        contentType: req.contentType,
+        contentType,
         contentLength: file.byteLength,
       });
 
