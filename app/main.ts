@@ -1,19 +1,7 @@
 import net from "net";
 
-import { Request } from "./types";
-
-import {
-  parseRequestBody,
-  parseRequestHeaders,
-  parseRequestLine,
-} from "./utils/parsers";
-
-import Router from "./router";
+import Router, { RequestParser } from "./router-engine";
 import "./routes/index";
-
-import handleNotFound from "./handlers/notFoundHandler";
-
-console.log("------------ Project start ------------");
 
 const router = Router.getInstance();
 
@@ -21,28 +9,18 @@ const server = net.createServer((socket) => {
   console.log("Connected");
 
   socket.on("data", (data) => {
-    try {
-      const rawData = data.toString("ascii");
-
-      const requestLine = parseRequestLine(rawData);
-      const headers = parseRequestHeaders(rawData, requestLine.extension);
-      const body = parseRequestBody(rawData, headers);
-
-      const request: Request = {
-        ...requestLine,
-        ...headers,
-        ...body,
-        params: {},
-      };
-
-      router.handleRequest(request, socket);
-    } catch (error) {
-      handleNotFound(socket);
-    }
+    const parser = new RequestParser(data);
+    router.dispatchIncomingRequest(parser, socket);
   });
 
   socket.on("close", () => {
     socket.end();
+  });
+
+  socket.on("error", (err) => {
+    socket.end(
+      `HTTP/1.1 500 Internal Server Error\r\n\ ${JSON.stringify(err)}\r\n`
+    );
   });
 });
 
