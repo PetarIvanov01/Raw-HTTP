@@ -1,6 +1,6 @@
-import path from "path";
-import fs from "fs/promises";
-import { Response } from "../types";
+import * as path from "path";
+import * as fs from "fs/promises";
+import type { Response } from "../types.d.js";
 
 const STATIC_PATH_DIR = path.join(process.cwd(), "public");
 

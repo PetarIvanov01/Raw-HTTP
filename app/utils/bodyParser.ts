@@ -1,4 +1,5 @@
-import { Request, Response } from "../types";
+import type { Request, Response } from "../types.d.js";
+
 function parser() {
   return {
     json: () => (req: Request, res: Response) => {

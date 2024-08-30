@@ -1,4 +1,4 @@
-import zlib from "zlib";
+import * as zlib from "zlib";
 
 export default function compressStaticFiles(file: Buffer): Promise<Buffer> {
   const promise = new Promise<Buffer>((resolve, reject) => {

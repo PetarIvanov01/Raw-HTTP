@@ -1,8 +1,9 @@
-import Router from "../router-engine/";
+import Router from "../router-engine/index.js";
 
-import indexHandler from "../handlers/indexHandler";
-import { createTodoHandler, getTodosHandler } from "../handlers/todoHandler";
-import bodyParser from "../utils/bodyParser";
+import bodyParser from "../utils/bodyParser.js";
+
+import indexHandler from "../handlers/indexHandler.js";
+import { createTodoHandler, getTodosHandler } from "../handlers/todoHandler.js";
 
 const router = Router.getInstance();
 

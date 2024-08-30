@@ -1,7 +1,7 @@
-import fsSync from "fs";
-import path from "path";
-import Table from "./_Table";
-import { createArrFromCSVLine, createCSVRow } from "./_utils";
+import * as fsSync from "fs";
+import * as path from "path";
+import Table from "./_Table.js";
+import { createArrFromCSVLine, createCSVRow } from "./_utils.js";
 
 export class Database {
   private databaseName: string;

@@ -1,9 +1,9 @@
-import { Router } from "./Router";
+import { Router } from "./Router.js";
 
-export { RouteHandler } from "./RouteHandler";
-export { MiddlewareManager } from "./MiddlewareManager";
-export { RequestProcessor } from "./RequestProcessor";
-export { RequestParser } from "./RequestParser";
-export { HTTPResponse } from "./HTTPResponse";
+export { RouteHandler } from "./RouteHandler.js";
+export { MiddlewareManager } from "./MiddlewareManager.js";
+export { RequestProcessor } from "./RequestProcessor.js";
+export { RequestParser } from "./RequestParser.js";
+export { HTTPResponse } from "./HTTPResponse.js";
 
 export default Router;

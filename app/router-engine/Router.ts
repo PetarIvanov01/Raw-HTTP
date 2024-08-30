@@ -1,9 +1,9 @@
-import { HttpHandler, Socket } from "../types";
+import type { HttpHandler, Socket } from "../types.d.js";
 
-import { RouteHandler } from "./RouteHandler";
-import { MiddlewareManager } from "./MiddlewareManager";
-import { RequestProcessor } from "./RequestProcessor";
-import { RequestParser } from "./RequestParser";
+import { RouteHandler } from "./RouteHandler.js";
+import { MiddlewareManager } from "./MiddlewareManager.js";
+import { RequestProcessor } from "./RequestProcessor.js";
+import { RequestParser } from "./RequestParser.js";
 
 export class Router {
   private static instance: Router;

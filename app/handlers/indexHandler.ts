@@ -1,8 +1,8 @@
-import path from "path";
-import fs from "fs/promises";
+import * as path from "path";
+import * as fs from "fs/promises";
 
-import { Request, Response } from "../types";
-import compressStaticFiles from "../utils/compr";
+import type { Request, Response } from "../types.d.ts";
+import compressStaticFiles from "../utils/compr.js";
 
 const STATIC_PATH_DIR = path.join(process.cwd(), "public");
 

@@ -1,5 +1,5 @@
-import { Request, Response } from "../types";
-import { createTodoService, getTodosService } from "../services/todoService";
+import type { Request, Response } from "../types.d.js";
+import { createTodoService, getTodosService } from "../services/todoService.js";
 
 export async function getTodosHandler(req: Request, res: Response) {
   const todo = await getTodosService();

@@ -1,5 +1,5 @@
-import HTTPResponse from "./router-engine/HTTPResponse";
-import { Socket } from "net";
+import { HTTPResponse } from "./router-engine/index.js";
+import * as net from "net";
 
 export interface RequestLineOptions {
   method: string;
@@ -28,11 +28,11 @@ export interface RequestStaticFiles extends RequestLineOptions {
   headers: RequestHeadersOptions;
 }
 
-export type Socket = Socket;
+export type Socket = net.Socket;
 
 export type HttpHandler = (req: Request, res: Response) => void;
 
-export interface HTTPResponse {
+export interface IHTTPResponse {
   statusCode: number;
   headers?: Partial<RequestHeadersOptions>;
   body?: any;

@@ -1,7 +1,7 @@
-import fsSync from "fs";
-import fs from "fs/promises";
-import readFileInChunks from "../utils/readFileInChunks";
-import { createCSVRow, createObjFromCSVLine } from "./_utils";
+import * as fsSync from "fs";
+import * as fs from "fs/promises";
+import readFileInChunks from "../utils/readFileInChunks.js";
+import { createCSVRow, createObjFromCSVLine } from "./_utils.js";
 
 type Row<Columns extends readonly string[]> = {
   [Key in Columns[number]]: string;

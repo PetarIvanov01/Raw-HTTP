@@ -1,4 +1,4 @@
-import { RequestHeadersOptions, HTTPResponse } from "../types";
+import type { RequestHeadersOptions, IHTTPResponse } from "../types.d.js";
 
 const statusMessages: Record<number, string> = {
   200: "OK",
@@ -29,7 +29,7 @@ export default function createResponse({
   headers,
   statusCode,
   body,
-}: HTTPResponse) {
+}: IHTTPResponse) {
   return `HTTP/1.1 ${statusMessages[statusCode]}${stringifyHeaders(
     headers || {}
   )}\r\n\r\n${body || ""}`;

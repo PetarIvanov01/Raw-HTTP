@@ -1,5 +1,5 @@
-import { Socket } from "../types";
-import createResponse from "../utils/createHttpResponse";
+import type { Socket } from "../types.d.ts";
+import createResponse from "../utils/createHttpResponse.js";
 
 type Headers = Record<string, string | number>;
 type KeyOfHeaders = keyof Headers;

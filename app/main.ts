@@ -1,8 +1,8 @@
-import net from "net";
+import * as net from "net";
 
-import Router, { RequestParser } from "./router-engine";
-import "./database/index";
-import "./routes/index";
+import Router, { RequestParser } from "./router-engine/index.js";
+import "./database/index.js";
+import "./routes/index.js";
 
 const router = Router.getInstance();
 
@@ -24,4 +24,6 @@ const server = net.createServer((socket) => {
     );
   });
 });
-server.listen(4221, "localhost");
+server.listen(4221, "localhost", () => {
+  console.log("Server is listening on port:", 4221);
+});

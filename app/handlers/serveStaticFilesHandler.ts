@@ -1,11 +1,11 @@
-import fs from "fs/promises";
-import path from "path";
+import * as fs from "fs/promises";
+import * as path from "path";
 
-import { RequestStaticFiles, Response } from "../types";
+import type { RequestStaticFiles, Response } from "../types.js";
 
-import compressStaticFiles from "../utils/compr";
-import { mimeType } from "../utils/mimeTypes";
-import handleNotFound from "./notFoundHandler";
+import { mimeType } from "../utils/mimeTypes.js";
+import compressStaticFiles from "../utils/compr.js";
+import handleNotFound from "./notFoundHandler.js";
 
 const STATIC_PATH_DIR = path.join(process.cwd(), "public");
 

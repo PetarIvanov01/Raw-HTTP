@@ -1,10 +1,17 @@
 {
-  "name": "Raw HTTP",
+  "name": "raw-http",
   "type": "module",
   "scripts": {
-    "dev": "bun --watch run app/main.ts"
+    "type-check": "tsc --noEmit",
+    "clean": "rm -rf dist",
+    "build": "npm run clean && tsc",
+    "start": "npm run build && node dist/main.js",
+    "dev": "npm run type-check && tsx --watch app/main.ts",
+    "test": "tsx --test --test-reporter=spec"
   },
   "devDependencies": {
-    "@types/node": "^20.12.11"
+    "@types/node": "^20.12.11",
+    "tsx": "^4.19.0",
+    "typescript": "^5.5.4"
   }
 }
