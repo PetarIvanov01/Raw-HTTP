@@ -3,7 +3,8 @@ import createResponse from "../utils/createHttpResponse";
 
 type Headers = Record<string, string | number>;
 type KeyOfHeaders = keyof Headers;
-export default class HTTPResponse {
+
+export class HTTPResponse {
   private socket: Socket;
   private headersSent: boolean = false;
   private statusCode: number = 200;
