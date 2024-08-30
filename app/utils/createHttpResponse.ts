@@ -1,3 +1,5 @@
+import { RequestHeadersOptions, HTTPResponse } from "../types";
+
 const statusMessages: Record<number, string> = {
   200: "OK",
   201: "Created",
@@ -9,53 +11,26 @@ const statusMessages: Record<number, string> = {
   500: "Internal Error",
 };
 
-export default function createResponse(
-  statusNumber: number,
-  options?: {
-    contentType?: string;
-    contentLength?: number;
-    responseData?: string;
-    contentEncoding?: string;
-    connection?: string;
-  }
-) {
-  let response = `HTTP/1.1 ${statusNumber} ${statusMessages[statusNumber]}\r\n`;
+function normalizeHeaderKey(key: keyof RequestHeadersOptions) {
+  return key.replace(/(?<=^|-)[a-z]/g, (x: string) => x.toUpperCase());
+}
 
-  if (options) {
-    const {
-      contentType,
-      contentLength,
-      responseData,
-      contentEncoding,
-      connection,
-    } = options;
+function stringifyHeaders(headers: Partial<RequestHeadersOptions>) {
+  return Object.entries(headers).reduce(
+    (hd, [key, val]) =>
+      `${hd}\r\n${normalizeHeaderKey(
+        key as keyof RequestHeadersOptions
+      )}: ${val}`,
+    ""
+  );
+}
 
-    if (contentLength !== undefined) {
-      response += `Content-Length: ${contentLength}\r\n`;
-    } else if (responseData) {
-      response += `Content-Length: ${Buffer.byteLength(responseData)}\r\n`;
-    }
-
-    if (contentEncoding) {
-      response += `Content-Encoding: ${contentEncoding}\r\n`;
-    }
-
-    if (contentType) {
-      response += `Content-Type: ${contentType}\r\n`;
-    }
-
-    if (connection) {
-      response += `Connection: ${connection}\r\n`;
-    }
-
-    response += "\r\n";
-
-    if (responseData) {
-      response += responseData;
-    }
-  } else {
-    response += "\r\n";
-  }
-
-  return response;
+export default function createResponse({
+  headers,
+  statusCode,
+  body,
+}: HTTPResponse) {
+  return `HTTP/1.1 ${statusMessages[statusCode]}${stringifyHeaders(
+    headers || {}
+  )}\r\n\r\n${body || ""}`;
 }
