@@ -1,8 +1,4 @@
-import {
-  RequestBody,
-  RequestHeadersOptions,
-  RequestLineOptions,
-} from "../types";
+import { RequestHeadersOptions, RequestLineOptions } from "../types";
 import { mimeType } from "../utils/mimeTypes";
 
 export class RequestParser {
@@ -30,13 +26,11 @@ export class RequestParser {
     let group = pathname.match(regexForExtension)?.groups;
 
     let extension = group?.ext;
-    let isCompressed = false;
 
     // TODO - Refactor this because it's look awful
     if (extension && extension === ".gz") {
       const originalPath = pathname.substring(0, pathname.length - 1 - 2);
       extension = originalPath.match(regexForExtension)?.groups?.ext;
-      isCompressed = true;
     }
 
     if (!mimeType[extension as keyof typeof mimeType]) {
