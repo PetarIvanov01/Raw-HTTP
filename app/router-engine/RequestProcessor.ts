@@ -1,12 +1,14 @@
-import { RouteHandler } from "./RouteHandler";
-import { MiddlewareManager } from "./MiddlewareManager";
 import { Request, RequestStaticFiles, Socket } from "../types";
 
-import { mimeType } from "../utils/parsers";
+import { RouteHandler } from "./RouteHandler";
+import { MiddlewareManager } from "./MiddlewareManager";
+import { HTTPResponse } from "./HTTPResponse";
+import { RequestParser } from "./RequestParser";
+
+import { mimeType } from "../utils/mimeTypes";
 
 import serveStaticFilesHandler from "../handlers/serveStaticFilesHandler";
 import handleNotFound from "../handlers/notFoundHandler";
-import { RequestParser } from "./Parser";
 
 export class RequestProcessor {
   constructor(
@@ -18,6 +20,7 @@ export class RequestProcessor {
     const { pathname, method, extension } = parser.getRequestLine();
 
     const route = this.routeHandler.findRoute(method, pathname);
+    const response = new HTTPResponse(socket);
 
     if (route) {
       const headers = parser.getRequestHeaders();
@@ -27,15 +30,15 @@ export class RequestProcessor {
         pathname,
         method,
         extension,
-        ...headers,
+        headers,
         body,
         params: {},
       };
 
-      this.middlewareManager.callMiddlewares(request, socket);
+      this.middlewareManager.callMiddlewares(request, response);
 
       request.params = route.params;
-      return route.handler(request, socket);
+      return route.handler(request, response);
     }
 
     if (extension && mimeType[extension as keyof typeof mimeType]) {
@@ -45,11 +48,11 @@ export class RequestProcessor {
         pathname,
         method,
         extension,
-        ...headers,
+        headers,
       };
-      return serveStaticFilesHandler(request, socket);
+      return serveStaticFilesHandler(request, response);
     }
 
-    handleNotFound(socket);
+    handleNotFound(response);
   }
 }
