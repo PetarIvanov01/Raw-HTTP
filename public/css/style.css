@@ -42,10 +42,10 @@ body {
   margin: 1em 0;
   padding: 0.6em 0.8em;
   border-radius: 0.3em;
+}
 
-  &:hover {
-    background: rgba(42, 74, 121, 0.8);
-  }
+.active {
+  background: rgba(42, 74, 121, 0.8);
 }
 
 .sidebar-nav ul li a {
@@ -103,7 +103,9 @@ body {
   height: 3em;
   margin-left: 1em;
 }
-
+.todo-section {
+  width: 100%;
+}
 .todo-section-header {
   display: flex;
   justify-content: space-between;
@@ -150,10 +152,11 @@ body {
 }
 
 .task-column {
-  flex-grow: 1;
   background-color: #fff;
   border-radius: 0.714em;
   padding: 1em;
+  max-width: 28.571em;
+  min-width: 16em;
   box-shadow: 0 0.14em 0.72em rgba(0, 0, 0, 0.1);
   margin-bottom: 1.4em;
 }
@@ -186,7 +189,6 @@ body {
   background-color: #f8f9fa;
   padding: 1.071em;
   border-radius: 0.714em;
-  max-width: 28.571em;
   margin-bottom: 1.071em;
   box-shadow: 0 0.071em 0.357em rgba(0, 0, 0, 0.1);
 }
@@ -226,6 +228,11 @@ body {
 /* Task Column Styles */
 
 /* Add Task Form */
+
+.hidden {
+  display: none !important;
+}
+
 .add-task-form {
   padding: 1em;
   background-color: #f8f9fa;
