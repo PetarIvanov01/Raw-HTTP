@@ -1,5 +1,4 @@
 import fsSync from "fs";
-import fs from "fs/promises";
 import path from "path";
 import Table from "./_Table";
 import { createArrFromCSVLine, createCSVRow } from "./_utils";
@@ -15,10 +14,10 @@ export class Database {
     this.load();
   }
 
-  public async createOrGetTable<ColumnTypes extends readonly string[]>(
+  public createOrGetTable<ColumnTypes extends readonly string[]>(
     tableName: string,
     columns: [...ColumnTypes]
-  ): Promise<Table<typeof columns>> {
+  ): Table<typeof columns> {
     const tableFilePath = path.join(this.dbDirPath, `${tableName}.csv`);
     const header = createCSVRow(columns);
 
@@ -26,20 +25,23 @@ export class Database {
       return this.tables[tableName] as Table<typeof columns>;
     }
 
-    await fs.writeFile(tableFilePath, header);
+    if (!fsSync.existsSync(tableFilePath)) {
+      fsSync.writeFileSync(tableFilePath, header);
+    }
+
     const table = new Table(tableName, tableFilePath, columns);
     this.tables[tableName] = table;
     return table;
   }
 
-  public async deleteTable(name: string) {
+  public deleteTable(name: string) {
     const table = this.findTable(name);
 
     if (!table) {
       throw new Error("Table does'not exist.");
     }
     delete this.tables[table.tableName];
-    await fs.rmdir(table.tablePath);
+    fsSync.unlinkSync(table.tablePath);
   }
 
   public listTables(): string[] {
