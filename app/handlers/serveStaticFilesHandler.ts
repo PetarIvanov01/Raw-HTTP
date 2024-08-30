@@ -1,30 +1,30 @@
 import fs from "fs/promises";
 import path from "path";
 
-import { RequestStaticFiles, Socket } from "../types";
+import { RequestStaticFiles, Response } from "../types";
 
-import createResponse from "../utils/createHttpResponse";
 import compressStaticFiles from "../utils/compr";
 import { mimeType } from "../utils/mimeTypes";
+import handleNotFound from "./notFoundHandler";
 
 const STATIC_PATH_DIR = path.join(process.cwd(), "public");
 
 export default async function serveStaticFilesHandler(
   req: RequestStaticFiles,
-  socket: Socket
+  res: Response
 ) {
   const pathname = req.pathname;
   const ext = req.extension;
 
   if (!ext) {
-    return socket.end(createResponse(404));
+    return handleNotFound(res);
   }
   const filePath = path.join(STATIC_PATH_DIR, pathname);
 
   try {
     await fs.access(filePath);
   } catch (error) {
-    return socket.end(createResponse(404));
+    return handleNotFound(res);
   }
 
   try {
@@ -34,24 +34,22 @@ export default async function serveStaticFilesHandler(
       if (!pathname.endsWith(".gz")) {
         file = await compressStaticFiles(file);
       }
-
       const contentType = mimeType[ext as keyof typeof mimeType];
-      const response = createResponse(200, {
-        contentEncoding: "gzip",
-        contentType,
-        contentLength: file.byteLength,
-      });
 
-      socket.write(response);
-      socket.write(file);
-      socket.end();
+      res
+        .status(200)
+        .set({
+          "Content-Type": contentType,
+          "Content-Encoding": "gzip",
+          "Content-Length": file.byteLength,
+        })
+        .send(file);
     } catch (error) {
       console.error("Gzip compression error:", error);
-      const response = createResponse(500);
-      socket.end(response);
+      res.status(500).end();
       return;
     }
   } catch (error) {
-    socket.end(createResponse(400));
+    res.status(400).end();
   }
 }
