@@ -1,30 +1,27 @@
 import path from "path";
-import { Socket, Request } from "../types";
-import createResponse from "../utils/createHttpResponse";
 import fs from "fs/promises";
 
-export default async function handleIndex(req: Request, socket: Socket) {
-  const { connection, staticPath } = req;
+import { Request, Response } from "../types";
+import compressStaticFiles from "../utils/compr";
 
-  if (!staticPath) {
-    return createResponse(404);
-  }
+const STATIC_PATH_DIR = path.join(process.cwd(), "public");
 
-  const filePath = path.join(staticPath, "index.html");
+export default async function handleIndex(req: Request, res: Response) {
+  const filePath = path.join(STATIC_PATH_DIR, "index.html");
   const file = await fs.readFile(filePath);
 
   if (!file) {
-    return createResponse(404);
+    res.status(400).end();
+    return;
   }
-  const response = createResponse(200, {
-    contentType: "text/html",
-    connection,
-  });
+  const body = await compressStaticFiles(file);
 
-  socket.write(response);
-  socket.write(file);
-
-  socket.end(() => {
-    console.log("Response is send: ", response.toString());
-  });
+  res
+    .status(200)
+    .set({
+      "Content-Type": "text/html",
+      "Content-Length": body.byteLength,
+      "Content-Encoding": "gzip",
+    })
+    .send(body);
 }
