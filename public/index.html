@@ -21,7 +21,7 @@
         </div>
         <nav class="sidebar-nav">
             <ul>
-                <li><a href="#" class="active">Dashboard</a></li>
+                <li class="active"><a href="#">Dashboard</a></li>
             </ul>
         </nav>
     </aside>
@@ -66,12 +66,13 @@
                         <div class="task-date">17/07/2024</div>
                     </div>
                     <!-- Add New Card -->
-                    <!-- <div class="add-new-card">
+                    <div class="add-new-card">
                         <button>+ Add New</button>
-                    </div> -->
-                    <form class="add-task-form">
-                        <input type="text" placeholder="Title" class="task-input title-input">
-                        <textarea placeholder="Description" class="task-input description-input"></textarea>
+                    </div>
+                    <form id="todo-form" class="hidden add-task-form">
+                        <input name="title" type="text" placeholder="Title" class="task-input title-input">
+                        <textarea name="description" placeholder="Description"
+                            class="task-input description-input"></textarea>
                         <button class="btn add-task-btn">Add Task</button>
                     </form>
                 </div>
@@ -117,6 +118,7 @@
             </div>
         </section>
     </main>
+    <script src="js/index.js"></script>
 </body>
 
 </html>
