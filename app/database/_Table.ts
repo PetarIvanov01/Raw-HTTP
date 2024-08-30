@@ -34,7 +34,31 @@ export default class Table<Columns extends readonly string[]> {
     // Update the size
   }
 
-  public async findRow(options: { where: Partial<Row<Columns>> }) {
+  public async fetchRows(
+    rowCount = 10
+  ): Promise<Array<Record<Columns[number], string>>> {
+    let rows: Array<Record<Columns[number], string>> = [];
+
+    const findCallback = (line: string) => {
+      const rowInObj = createObjFromCSVLine(line, this.columns);
+
+      if (rows.length >= rowCount) {
+        return true;
+      }
+
+      rows.push(rowInObj);
+      return false;
+    };
+
+    const startFrom = Buffer.byteLength(createCSVRow(this.columns));
+
+    const reader = readFileInChunks(startFrom);
+    await reader(this.tablePath, 1024, findCallback);
+
+    return rows;
+  }
+
+  public async fetchOneRow(options: { where: Partial<Row<Columns>> }) {
     let foundedRow: undefined | Row<Columns>;
     const queries = Object.entries(options.where);
 
