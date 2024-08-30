@@ -1,9 +1,14 @@
-import Router from "../router";
+import Router from "../router-engine/";
 
 import indexHandler from "../handlers/indexHandler";
-import echoHandler from "../handlers/echoHandler";
+import { createTodoHandler, getTodosHandler } from "../handlers/todoHandler";
+import bodyParser from "../utils/bodyParser";
 
 const router = Router.getInstance();
 
+router.use(bodyParser.urlencoded());
+
 router.get("/", indexHandler);
-router.get("/echo/:echo", echoHandler);
+
+router.get("/todo", getTodosHandler);
+router.post("/todo", createTodoHandler);
