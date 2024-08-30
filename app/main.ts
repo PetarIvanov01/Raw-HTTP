@@ -1,6 +1,7 @@
 import net from "net";
 
 import Router, { RequestParser } from "./router-engine";
+import "./database/index";
 import "./routes/index";
 
 const router = Router.getInstance();
@@ -23,5 +24,4 @@ const server = net.createServer((socket) => {
     );
   });
 });
-
 server.listen(4221, "localhost");
