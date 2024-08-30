@@ -3,7 +3,7 @@ import { HttpHandler, Socket } from "../types";
 import { RouteHandler } from "./RouteHandler";
 import { MiddlewareManager } from "./MiddlewareManager";
 import { RequestProcessor } from "./RequestProcessor";
-import { RequestParser } from "./Parser";
+import { RequestParser } from "./RequestParser";
 
 export class Router {
   private static instance: Router;
