@@ -4,7 +4,8 @@
     "strict": true,
     "skipLibCheck": true,
     "rootDir": "app",
-    "outDir": "dist"
+    "outDir": "dist",
+    "sourceMap": true
   },
   "include": ["app/*", "tests/*"],
   "exclude": ["node_modules"]

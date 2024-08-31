@@ -7,10 +7,15 @@
     "build": "npm run clean && tsc",
     "start": "npm run build && node dist/main.js",
     "dev": "npm run type-check && tsx --watch app/main.ts",
-    "test": "tsx --test --test-reporter=spec"
+    "test": "jest",
+    "coverage": "jest --coverage"
   },
   "devDependencies": {
+    "@jest/globals": "^29.7.0",
+    "@types/jest": "^29.5.12",
     "@types/node": "^20.12.11",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.2.5",
     "tsx": "^4.19.0",
     "typescript": "^5.5.4"
   }
