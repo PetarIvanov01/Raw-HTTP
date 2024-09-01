@@ -1,5 +1,4 @@
-import * as fsSync from "fs";
-import * as fs from "fs/promises";
+import type { FileSystemI } from "../lib/fileSystem.js";
 import readFileInChunks from "../utils/readFileInChunks.js";
 import { createCSVRow, createObjFromCSVLine } from "./_utils.js";
 
@@ -13,11 +12,19 @@ export default class Table<Columns extends readonly string[]> {
   public columns: [...Columns];
 
   public tableSize: number;
+  private defaultRowCount = 10;
+  private fs: FileSystemI;
 
-  constructor(tableName: string, tablePath: string, columns: [...Columns]) {
+  constructor(
+    tableName: string,
+    tablePath: string,
+    columns: [...Columns],
+    fs: FileSystemI
+  ) {
     this.tableName = tableName;
     this.tablePath = tablePath;
     this.columns = columns;
+    this.fs = fs;
     this.tableSize = Buffer.byteLength(createCSVRow(columns));
     this.load();
   }
@@ -25,17 +32,22 @@ export default class Table<Columns extends readonly string[]> {
   public async createRow(row: Row<Columns>) {
     const csvRow = createCSVRow(this.columns.map((e) => row[e]));
     this.tableSize += Buffer.byteLength(csvRow);
-    await fs.appendFile(this.tablePath, csvRow);
+    await this.fs.appendFile(this.tablePath, csvRow);
   }
 
-  public async deleteRow() {
-    // Find the row
+  public async deleteRow(options: { where: Partial<Row<Columns>> }) {
+    const byteRange = await this.findRowByteRange(options.where);
+
+    if (!byteRange) {
+      throw new Error("Row doesn't exist in the table");
+    }
+
     // Delete it
     // Update the size
   }
 
   public async fetchRows(
-    rowCount = 10
+    rowCount = this.defaultRowCount
   ): Promise<Array<Record<Columns[number], string>>> {
     let rows: Array<Record<Columns[number], string>> = [];
 
@@ -123,7 +135,7 @@ export default class Table<Columns extends readonly string[]> {
   }
 
   private async getRowByByteRange(byteRange: { start: number; end: number }) {
-    const fd = await fs.open(this.tablePath);
+    const fd = await this.fs.open(this.tablePath);
     try {
       const stream = fd.createReadStream({ ...byteRange });
       let data = "";
@@ -149,12 +161,14 @@ export default class Table<Columns extends readonly string[]> {
 
   private load() {
     try {
-      fsSync.accessSync(this.tablePath);
-    } catch (error) {
-      fsSync.writeFileSync(this.tableName, "");
+      this.fs.accessSync(this.tablePath);
+    } catch (err) {
+      this.fs.writeFileSync(this.tablePath, "");
     } finally {
-      const stat = fsSync.statSync(this.tablePath);
-      this.tableSize = stat.size;
+      const stat = this.fs.statSync(this.tablePath, { throwIfNoEntry: true });
+      if (stat) {
+        this.tableSize = stat.size;
+      }
     }
   }
 }
