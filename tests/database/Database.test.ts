@@ -1,14 +1,25 @@
-import { describe, test, expect } from "@jest/globals";
-import { Database } from "../../../app/database/Database.js";
+import {
+  describe,
+  test,
+  expect,
+  beforeAll,
+  beforeEach,
+  afterAll,
+  afterEach,
+} from "@jest/globals";
+import { Database } from "../../app/database/Database.js";
+
+import { customFileSystem as fs } from "../../app/lib/fileSystem.js";
 import * as path from "node:path";
-import * as fs from "node:fs";
 
 const DB_NAME = "TEST";
 const dbPath = path.join(process.cwd(), DB_NAME);
 
 function clean() {
-  if (fs.existsSync(dbPath)) {
-    fs.rmSync(dbPath, { force: true, recursive: true });
+  try {
+    fs.rmSync(dbPath);
+  } catch (error) {
+    return;
   }
 }
 
@@ -32,51 +43,51 @@ function setupTable() {
   };
 }
 
+function setupDb() {
+  const db = new Database(DB_NAME, dbPath, fs as any);
+  return { db };
+}
+
 describe("Database class tests", () => {
   beforeAll(() => {
-    clean();
+    return clean();
   });
-
   afterAll(() => {
-    clean();
+    return clean();
   });
-
   beforeEach(() => {
-    clean();
+    return clean();
   });
-
   afterEach(() => {
-    clean();
+    return clean();
   });
 
+  // Unit
   test("should initialize the database with 0 tables", () => {
-    const db = new Database(DB_NAME, dbPath);
+    const { db } = setupDb();
     expect(db).toBeInstanceOf(Database);
     expect(db.listTables().length).toBe(0);
   });
 
-  test("should create the database directory in the file system", () => {
-    new Database(DB_NAME, dbPath);
-    expect(() => fs.statSync(dbPath)).not.toThrow();
+  // Unit
+  test("should throw if trying to delete a table that does not exist", () => {
+    const { tableName } = setupTable();
+    const { db } = setupDb();
+
+    expect(() => db.deleteTable("not-exist")).toThrow("Table does'not exist.");
   });
 
-  test("should initialize a todo table", () => {
-    const db = new Database(DB_NAME, dbPath);
-    const todoTable = db.createOrGetTable("_todo", ["id", "name"]);
-
-    const tables = db.listTables();
-    expect(tables).toContain(todoTable.tableName);
-  });
-
+  // Unit
   test("should create a todo table file in the directory", () => {
-    const db = new Database(DB_NAME, dbPath);
+    const { db } = setupDb();
     const todoTable = db.createOrGetTable("_todo", ["id", "name"]);
 
     expect(() => fs.statSync(todoTable.tablePath)).not.toThrow();
   });
 
+  // Unit
   test("should delete a table from the database", () => {
-    const db = new Database(DB_NAME, dbPath);
+    const { db } = setupDb();
     const todoTable = db.createOrGetTable("_todo", ["id", "user"]);
 
     expect(db.listTables()).toContain(todoTable.tableName);
@@ -86,8 +97,24 @@ describe("Database class tests", () => {
     expect(db.listTables()).not.toContain(todoTable.tableName);
   });
 
+  // Unit
+  test("should initialize a todo table", () => {
+    const { db } = setupDb();
+    const todoTable = db.createOrGetTable("_todo", ["id", "name"]);
+
+    const tables = db.listTables();
+    expect(tables).toContain(todoTable.tableName);
+  });
+
+  // Integration
+  test("should create the database directory in the file system", () => {
+    setupDb();
+    expect(() => fs.statSync(dbPath)).not.toThrow();
+  });
+
+  // Integration
   test("should delete the table file from the directory", () => {
-    const db = new Database(DB_NAME, dbPath);
+    const { db } = setupDb();
     const todoTable = db.createOrGetTable("_todo", ["id", "user"]);
 
     expect(() => fs.statSync(todoTable.tablePath)).not.toThrow();
@@ -97,20 +124,22 @@ describe("Database class tests", () => {
     expect(() => fs.statSync(todoTable.tablePath)).toThrow();
   });
 
+  // Integration
   test("should load tables from existing database file directory", () => {
     const { tableName } = setupTable();
 
-    const db = new Database(tableName, dbPath);
+    const { db } = setupDb();
     const tables = db.listTables();
 
     expect(tables.length).toBeGreaterThanOrEqual(1);
     expect(tables).toContain(tableName);
   });
 
+  // Integration
   test("should have the same table head after reloading the database", () => {
     const { tableName, head } = setupTable();
 
-    const db = new Database(tableName, dbPath);
+    const { db } = setupDb();
     const table = db.createOrGetTable(tableName, head);
 
     expect(table.columns).toEqual(expect.arrayContaining(head));
