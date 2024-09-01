@@ -1,4 +1,4 @@
-import * as fs from "fs/promises";
+import { customFileSystem as fs } from "../lib/fileSystem.js";
 
 export default function processFileInChunks(startOffset = 0) {
   return async (
