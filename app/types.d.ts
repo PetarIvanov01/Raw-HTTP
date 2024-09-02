@@ -1,4 +1,5 @@
-import { HTTPResponse } from "./router-engine/index.js";
+import Router from "./core/routing/index.ts";
+import { HTTPResponse } from "./core/routing/HTTPResponse.ts";
 import * as net from "net";
 
 export interface RequestLineOptions {
@@ -32,10 +33,5 @@ export type Socket = net.Socket;
 
 export type HttpHandler = (req: Request, res: Response) => void;
 
-export interface IHTTPResponse {
-  statusCode: number;
-  headers?: Partial<RequestHeadersOptions>;
-  body?: any;
-}
-
+export type Router = Router;
 export type Response = HTTPResponse;

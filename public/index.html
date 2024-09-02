@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Todo App</title>
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -14,7 +15,6 @@
 </head>
 
 <body>
-
     <aside class="sidebar">
         <div class="sidebar-header">
             <h1>Toodos</h1>
@@ -41,7 +41,7 @@
                 <h2>My Todo</h2>
 
                 <div class="header-actions">
-                    <button class="btn new-task">+ New Task</button>
+                    <button id="new-task" class="btn new-task">+ New Task</button>
                     <div class="profile-pic">
                         <img src="svg/profile.svg" alt="User Profile">
                     </div>
@@ -56,67 +56,49 @@
                 </div>
             </div>
 
-            <div class="task-columns">
+            <section id="task-columns" class="task-columns">
                 <!-- To Start Column -->
-                <div class="task-column">
+                <section id="to-start" class="task-column">
                     <h3><span class="dot blue"></span> To Start</h3>
-                    <div class="task-card">
-                        <h4>Title of the Task</h4>
-                        <p>Lorem Ipsum has been the industry's standard dummy text ever since the 1500s...</p>
-                        <div class="task-date">17/07/2024</div>
-                    </div>
-                    <!-- Add New Card -->
-                    <div class="add-new-card">
-                        <button>+ Add New</button>
-                    </div>
-                    <form id="todo-form" class="hidden add-task-form">
-                        <input name="title" type="text" placeholder="Title" class="task-input title-input">
-                        <textarea name="description" placeholder="Description"
-                            class="task-input description-input"></textarea>
-                        <button class="btn add-task-btn">Add Task</button>
-                    </form>
-                </div>
+
+                    <!-- Todos -->
+                </section>
 
                 <!-- In Progress Column -->
-                <div class="task-column">
+                <section id="in-progress" class="task-column">
                     <h3><span class="dot yellow"></span> In Progress</h3>
-                    <div class="task-card">
-                        <h4>Title of the Task</h4>
-                        <p>Lorem Ipsum has been the industry's standard dummy text ever since the 1500s...</p>
-                        <div class="task-date">17/07/2024</div>
-                    </div>
-                    <div class="task-card">
-                        <h4>Title of the Task</h4>
-                        <p>
-                            Lorem Ipsum has been the industry's standard dummy text ever since the 1500s... Lorem Ipsum
-                            has been the industry's standard dummy text ever since the 1500s...
-                            Lorem Ipsum has been the industry's standard dummy text ever since the 1500s...Lorem Ipsum
-                            has been the industry's standard dummy text ever since the 1500s...
-                            Lorem Ipsum has been the industry's standard dummy text ever since the 1500s...
-                            Lorem Ipsum has been the industry's standard dummy text ever since the 1500s...
-                            Lorem Ipsum has been the industry's standard dummy text ever since the 1500s...
-                        </p>
-                        <div class="task-date">17/07/2024</div>
-                    </div>
-                    <div class="task-card">
-                        <h4>Title of the Task</h4>
-                        <p>Lorem Ipsum has been the industry's standard dummy text ever since the 1500s...</p>
-                        <div class="task-date">17/07/2024</div>
-                    </div>
 
-                </div>
+                    <!-- Todos -->
+                </section>
 
                 <!-- Completed Column -->
-                <div class="task-column">
+                <section id="completed" class="task-column">
                     <h3><span class="dot green"></span> Completed</h3>
-                    <div class="task-card">
-                        <h4>Title of the Task</h4>
-                        <p>Lorem Ipsum has been the industry's standard dummy text ever since the 1500s...</p>
-                        <div class="task-date">17/07/2024</div>
-                    </div>
+
+                    <!-- Todos -->
+                </section>
                 </div>
+            </section>
+
+            <div id="todo-form-container" class="todo-form-container hidden">
+                <form id="todo-form" class="todo-form">
+                    <h2>Create a New Todo</h2>
+                    <div class="add-row">
+                        <label for="title">Title</label>
+                        <input type="text" id="title" name="title" class="task-input" placeholder="Enter the title">
+                    </div>
+
+                    <div class="add-row">
+                        <label for="description">Description</label>
+                        <textarea id="description" name="description" class="task-input"
+                            placeholder="Enter the description"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn add-task-btn">Add Task</button>
+                    <button type="button" id="close-form" class="btn close-task-btn">Cancel</button>
+                </form>
             </div>
-        </section>
+
     </main>
     <script src="js/index.js"></script>
 </body>

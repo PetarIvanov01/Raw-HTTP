@@ -1,4 +1,5 @@
-import { todosTable } from "../database/tables.js";
+import { getFormatDate } from "./utils.js";
+import { todosTable } from "../models/todosTable.js";
 
 interface ITodoCreate {
   stage: "start" | "in progress" | "completed" | string;
@@ -26,15 +27,5 @@ export async function createTodoService(todo: ITodo) {
 
 export async function getTodosService() {
   const rows = await todosTable.fetchRows(7);
-
   return rows;
-}
-
-function getFormatDate() {
-  const d = new Date();
-  const day = String(d.getDate()).padStart(2, "0");
-  const month = String(d.getMonth() + 1).padStart(2, "0"); // Months are zero-based
-  const year = d.getFullYear();
-
-  return `${day}/${month}/${year}`;
 }

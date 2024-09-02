@@ -1,29 +1,16 @@
-import * as net from "net";
+import initDatabase from "./config/database.js";
+import createServer from "./config/server.js";
+import initRouter from "./config/router.js";
 
-import Router, { RequestParser } from "./router-engine/index.js";
-import "./database/index.js";
-import "./routes/index.js";
+const PORT = Number(process.env.PORT || 4221);
 
-const router = Router.getInstance();
+main();
+function main() {
+  initDatabase();
+  const router = initRouter();
+  const server = createServer(router);
 
-const server = net.createServer((socket) => {
-  console.log("Connected");
-
-  socket.on("data", (data) => {
-    const parser = new RequestParser(data);
-    router.dispatchIncomingRequest(parser, socket);
+  server.listen(PORT, "localhost", () => {
+    console.log(`[INFO] Server listening on http://localhost:${PORT}`);
   });
-
-  socket.on("close", () => {
-    socket.end();
-  });
-
-  socket.on("error", (err) => {
-    socket.end(
-      `HTTP/1.1 500 Internal Server Error\r\n\ ${JSON.stringify(err)}\r\n`
-    );
-  });
-});
-server.listen(4221, "localhost", () => {
-  console.log("Server is listening on port:", 4221);
-});
+}

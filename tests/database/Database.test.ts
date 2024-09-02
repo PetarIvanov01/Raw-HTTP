@@ -7,10 +7,10 @@ import {
   afterAll,
   afterEach,
 } from "@jest/globals";
-import { Database } from "../../app/database/Database.js";
+import { Database } from "../../app/core/database/Database.js";
 
-import { customFileSystem as fs } from "../../app/lib/fileSystem.js";
 import * as path from "node:path";
+import { customFileSystem as fs } from "../../app/core/lib/fileSystem.js";
 
 const DB_NAME = "TEST";
 const dbPath = path.join(process.cwd(), DB_NAME);

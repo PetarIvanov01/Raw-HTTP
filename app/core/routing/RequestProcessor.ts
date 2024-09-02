@@ -1,14 +1,14 @@
-import type { Request, RequestStaticFiles, Socket } from "../types.d.ts";
+import type { Request, RequestStaticFiles, Socket } from "../../types.js";
 
 import { RouteHandler } from "./RouteHandler.js";
 import { MiddlewareManager } from "./MiddlewareManager.js";
 import { HTTPResponse } from "./HTTPResponse.js";
 import { RequestParser } from "./RequestParser.js";
 
-import { mimeType } from "../utils/mimeTypes.js";
+import { mimeType } from "./constants.js";
 
-import serveStaticFilesHandler from "../handlers/serveStaticFilesHandler.js";
-import handleNotFound from "../handlers/notFoundHandler.js";
+import serveStaticFilesHandler from "../../handlers/static/serveStaticFilesHandler.js";
+import handleNotFound from "../../handlers/static/notFoundHandler.js";
 
 export class RequestProcessor {
   constructor(

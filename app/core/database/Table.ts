@@ -1,6 +1,6 @@
 import type { FileSystemI } from "../lib/fileSystem.js";
-import readFileInChunks from "../utils/readFileInChunks.js";
-import { createCSVRow, createObjFromCSVLine } from "./_utils.js";
+import readFileInChunks from "../lib/readFileInChunks.js";
+import { createCSVRow, createObjFromCSVLine } from "./utils.js";
 
 type Row<Columns extends readonly string[]> = {
   [Key in Columns[number]]: string;
@@ -213,10 +213,11 @@ export default class Table<Columns extends readonly string[]> {
       this.tableSize = fileContent.length;
 
       if (process.env.NODE_ENV?.includes("dev")) {
-        console.log("---Development stuff---");
-        console.log("Table size: ", this.tableSize);
-        console.log("Last Internal id: ", this._idCounter);
-        console.log("-----------------------");
+        console.log("[DEV] Building table:", this.tableName);
+        console.log(`[DEV] Table Path: ${this.tablePath}`);
+        console.log(`[DEV] Table Size: ${this.tableSize} bytes`);
+        console.log(`[DEV] Last Internal ID: ${this._idCounter}`);
+        console.log("--------------------------------------------------");
       }
     } catch (err) {
       this._idCounter = 0;
