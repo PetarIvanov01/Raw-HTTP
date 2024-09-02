@@ -49,6 +49,19 @@ async function loadTableWithTodos(
   }
 }
 
+function preloadTable() {
+  let result = "id,title,description\n";
+  for (let i = 1; i <= 10; i++) {
+    result += `${i},Title - ${i},Description - ${i}\n`;
+  }
+  const db = new Database(DB_NAME, dbPath, fs);
+  fs.writeFileSync(path.join(dbPath, "todo.csv"), result);
+
+  const tableTodo = db.createOrGetTable("todo", ["title", "description"]);
+
+  return { tableTodo, size: result.length };
+}
+
 describe("Table class tests", () => {
   beforeAll(() => {
     return clean();
@@ -100,6 +113,12 @@ describe("Table class tests", () => {
 
     const newSize = tableTodo.tableSize;
     expect(newSize).toBeGreaterThan(oldSize);
+  });
+
+  // Integration?
+  test("should correctly initialize table size after preloading data", () => {
+    const { tableTodo, size } = preloadTable();
+    expect(tableTodo.tableSize).toBe(size);
   });
 
   test("should increase table internal id after inserting a new row", async () => {
