@@ -21,18 +21,20 @@ export class Database {
     columns: [...ColumnTypes]
   ): Table<typeof columns> {
     const tableFilePath = path.join(this.dbDirPath, `${tableName}.csv`);
-    const header = createCSVRow(columns);
 
     if (this.tables[tableName]) {
       return this.tables[tableName] as Table<typeof columns>;
     }
 
-    if (!this.fs.existsSync(tableFilePath)) {
+    const table = new Table(tableName, tableFilePath, columns, this.fs);
+    const header = createCSVRow(table.columns);
+
+    if (this.fs.existsSync(tableFilePath)) {
       this.fs.writeFileSync(tableFilePath, header);
     }
 
-    const table = new Table(tableName, tableFilePath, columns, this.fs);
     this.tables[tableName] = table;
+
     return table;
   }
 
