@@ -6,12 +6,21 @@ type Row<Columns extends readonly string[]> = {
   [Key in Columns[number]]: string;
 };
 
+type ReturnedRow<Columns extends readonly string[]> = Row<Columns> & {
+  id: string;
+};
+type ColumnsWithInternalId<Columns extends readonly string[]> = [
+  "id",
+  ...Columns
+];
+
 export default class Table<Columns extends readonly string[]> {
   public tableName: string;
   public tablePath: string;
-  public columns: [...Columns];
+  public columns: ColumnsWithInternalId<Columns>;
 
   public tableSize: number;
+  private _idCounter: number;
   private defaultRowCount = 10;
   private fs: FileSystemI;
 
@@ -21,18 +30,28 @@ export default class Table<Columns extends readonly string[]> {
     columns: [...Columns],
     fs: FileSystemI
   ) {
+    this._idCounter = 0;
     this.tableName = tableName;
     this.tablePath = tablePath;
-    this.columns = columns;
+    this.columns = columns.includes("id")
+      ? (columns as any)
+      : ["id", ...columns];
     this.fs = fs;
     this.tableSize = Buffer.byteLength(createCSVRow(columns));
     this.load();
   }
 
   public async createRow(row: Row<Columns>) {
-    const csvRow = createCSVRow(this.columns.map((e) => row[e]));
-    this.tableSize += Buffer.byteLength(csvRow);
+    const id = this.generateId();
+
+    const rowWithId: ReturnedRow<Columns> = { id, ...row };
+    const csvRow = createCSVRow(this.columns.map((e) => rowWithId[e]));
+
     await this.fs.appendFile(this.tablePath, csvRow);
+
+    this.tableSize += Buffer.byteLength(csvRow);
+
+    return rowWithId;
   }
 
   public async deleteRow(options: { where: Partial<Row<Columns>> }) {
@@ -48,8 +67,8 @@ export default class Table<Columns extends readonly string[]> {
 
   public async fetchRows(
     rowCount = this.defaultRowCount
-  ): Promise<Array<Record<Columns[number], string>>> {
-    let rows: Array<Record<Columns[number], string>> = [];
+  ): Promise<Array<Row<ColumnsWithInternalId<Columns>>>> {
+    let rows: Array<Row<ColumnsWithInternalId<Columns>>> = [];
 
     const findCallback = (line: string) => {
       const rowInObj = createObjFromCSVLine(line, this.columns);
@@ -70,15 +89,20 @@ export default class Table<Columns extends readonly string[]> {
     return rows;
   }
 
-  public async fetchOneRow(options: { where: Partial<Row<Columns>> }) {
-    let foundedRow: undefined | Row<Columns>;
+  public async fetchOneRow(options: {
+    where: Partial<Row<ColumnsWithInternalId<Columns>>>;
+  }) {
+    let foundedRow: undefined | Row<ColumnsWithInternalId<Columns>>;
     const queries = Object.entries(options.where);
 
     if (queries.length === 0) {
       return undefined;
     }
     const findCallback = (line: string, start: number, end: number) => {
-      const rowInObj = createObjFromCSVLine(line, this.columns);
+      const rowInObj = createObjFromCSVLine(
+        line,
+        this.columns
+      ) as ReturnedRow<Columns>;
 
       const isMatch = queries.every(
         ([key, value]) => rowInObj[key as Columns[number]] === value
@@ -99,7 +123,9 @@ export default class Table<Columns extends readonly string[]> {
     return foundedRow;
   }
 
-  private async findRowByteRange(row: Partial<Row<Columns>>) {
+  private async findRowByteRange(
+    row: Partial<Row<ColumnsWithInternalId<Columns>>>
+  ) {
     const startFrom = Buffer.byteLength(createCSVRow(this.columns));
     const queries = Object.entries(row);
 
@@ -114,7 +140,8 @@ export default class Table<Columns extends readonly string[]> {
       const rowInObj = createObjFromCSVLine(line, this.columns);
 
       const isMatch = queries.every(
-        ([key, value]) => rowInObj[key as Columns[number]] === value
+        ([key, value]) =>
+          rowInObj[key as ColumnsWithInternalId<Columns>[number]] === value
       );
 
       if (isMatch) {
@@ -157,6 +184,10 @@ export default class Table<Columns extends readonly string[]> {
     } finally {
       fd.close();
     }
+  }
+
+  private generateId() {
+    return (++this._idCounter).toString(); // Simple ID generation logic
   }
 
   private load() {
