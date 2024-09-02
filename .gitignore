@@ -4,3 +4,7 @@ design/
 plan.md
 dist/
 coverage/
+mock.ts
+.env
+run-multiply.sh
+.vscode
