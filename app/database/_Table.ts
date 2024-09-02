@@ -38,7 +38,7 @@ export default class Table<Columns extends readonly string[]> {
       : ["id", ...columns];
     this.fs = fs;
     this.tableSize = Buffer.byteLength(createCSVRow(columns));
-    this.load();
+    this.loadSync();
   }
 
   public async createRow(row: Row<Columns>) {
@@ -190,10 +190,36 @@ export default class Table<Columns extends readonly string[]> {
     return (++this._idCounter).toString(); // Simple ID generation logic
   }
 
-  private load() {
+  private loadSync() {
     try {
       this.fs.accessSync(this.tablePath);
+
+      const fileContent = this.fs.readFileSync(this.tablePath, "utf-8");
+      const lines = fileContent.split("\n").slice(1);
+
+      for (const line of lines) {
+        if (line.trim()) {
+          const idIndex = line.indexOf(",");
+          const id = line.substring(0, idIndex);
+          if (id) {
+            const parsedId = parseInt(id, 10);
+            if (!isNaN(parsedId)) {
+              this._idCounter++;
+            }
+          }
+        }
+      }
+
+      this.tableSize = fileContent.length;
+
+      if (process.env.NODE_ENV?.includes("dev")) {
+        console.log("---Development stuff---");
+        console.log("Table size: ", this.tableSize);
+        console.log("Last Internal id: ", this._idCounter);
+        console.log("-----------------------");
+      }
     } catch (err) {
+      this._idCounter = 0;
       this.fs.writeFileSync(this.tablePath, "");
     } finally {
       const stat = this.fs.statSync(this.tablePath, { throwIfNoEntry: true });
