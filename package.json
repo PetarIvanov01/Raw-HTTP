@@ -6,7 +6,7 @@
     "clean": "rm -rf dist",
     "build": "npm run clean && tsc",
     "start": "npm run build && node dist/main.js",
-    "dev": "npm run type-check && tsx --watch app/main.ts",
+    "dev": "npm run type-check && set NODE_ENV=development&& tsx --watch app/main.ts",
     "test": "jest --runInBand",
     "coverage": "jest --coverage --runInBand"
   },
