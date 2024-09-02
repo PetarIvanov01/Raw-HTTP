@@ -1,4 +1,4 @@
-import type { HttpHandler, Socket } from "../types.d.js";
+import type { HttpHandler, Socket } from "../../types.js";
 
 import { RouteHandler } from "./RouteHandler.js";
 import { MiddlewareManager } from "./MiddlewareManager.js";

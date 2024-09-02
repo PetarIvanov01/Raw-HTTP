@@ -1,5 +1,8 @@
-import type { Request, Response } from "../types.d.js";
-import { createTodoService, getTodosService } from "../services/todoService.js";
+import type { Request, Response } from "../../types.js";
+import {
+  createTodoService,
+  getTodosService,
+} from "../../services/todoService.js";
 
 export async function getTodosHandler(req: Request, res: Response) {
   const todo = await getTodosService();
@@ -15,7 +18,11 @@ export async function createTodoHandler(req: Request, res: Response) {
     const data = validateCreateTodoBody(req.body);
 
     await createTodoService(data);
-    res.status(204).set("Content-type", "text").end(JSON.stringify(data));
+
+    res
+      .status(204)
+      .set("Content-type", "application/json")
+      .end(JSON.stringify(data));
   } catch (error: any) {
     res.status(400).end(error.message);
   }

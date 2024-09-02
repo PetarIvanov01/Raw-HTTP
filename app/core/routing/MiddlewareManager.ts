@@ -1,4 +1,4 @@
-import type { HttpHandler, Request, Response } from "../types.d.js";
+import type { HttpHandler, Request, Response } from "../../types.js";
 
 export class MiddlewareManager {
   private middlewares: HttpHandler[] = [];

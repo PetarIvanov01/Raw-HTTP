@@ -3,7 +3,7 @@ import {
   createArrFromCSVLine,
   createCSVRow,
   createObjFromCSVLine,
-} from "../../app/database/_utils";
+} from "../../app/core/database/utils.js";
 
 describe("Database utils functions tests", () => {
   describe("createCSVRow", () => {

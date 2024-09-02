@@ -1,9 +1,11 @@
-import type { Request, Response } from "../types.d.js";
+import type { Request, Response } from "../../types.js";
 
 function parser() {
   return {
     json: () => (req: Request, res: Response) => {
       if (req.headers["content-type"] === "application/json") {
+        const body = JSON.parse(req.body);
+        req.body = body;
       }
     },
     urlencoded: () => (req: Request, res: Response) => {

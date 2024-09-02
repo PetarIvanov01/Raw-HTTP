@@ -1,5 +1,5 @@
-import type { RequestHeadersOptions, RequestLineOptions } from "../types.d.js";
-import { mimeType } from "../utils/mimeTypes.js";
+import type { RequestHeadersOptions, RequestLineOptions } from "../../types.js";
+import { mimeType } from "./constants.js";
 
 export class RequestParser {
   private rawRequest: string;

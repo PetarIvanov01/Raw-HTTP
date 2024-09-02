@@ -1,5 +1,6 @@
-import type { Socket } from "../types.d.ts";
-import createResponse from "../utils/createHttpResponse.js";
+import type { RequestHeadersOptions, Socket } from "../../types.js";
+
+import { statusMessages } from "./constants.js";
 
 type Headers = Record<string, string | number>;
 type KeyOfHeaders = keyof Headers;
@@ -59,7 +60,9 @@ export class HTTPResponse {
       this.write(data);
     }
     this.socket.end(() => {
-      console.log("Response is sent and socket is closed");
+      console.log(
+        `[INFO] Response sent successfully. Socket closed for ${this.socket.remoteAddress}:${this.socket.remotePort}`
+      );
     });
   }
 
@@ -67,4 +70,30 @@ export class HTTPResponse {
     this.writeHead();
     this.socket.end(data);
   }
+}
+
+function normalizeHeaderKey(key: keyof RequestHeadersOptions) {
+  return key.replace(/(?<=^|-)[a-z]/g, (x: string) => x.toUpperCase());
+}
+
+function stringifyHeaders(headers: Partial<RequestHeadersOptions>) {
+  return Object.entries(headers).reduce(
+    (hd, [key, val]) =>
+      `${hd}\r\n${normalizeHeaderKey(
+        key as keyof RequestHeadersOptions
+      )}: ${val}`,
+    ""
+  );
+}
+
+function createResponse({ headers, statusCode, body }: IHTTPResponse) {
+  return `HTTP/1.1 ${statusMessages[statusCode]}${stringifyHeaders(
+    headers || {}
+  )}\r\n\r\n${body || ""}`;
+}
+
+interface IHTTPResponse {
+  statusCode: number;
+  headers?: Partial<RequestHeadersOptions>;
+  body?: any;
 }

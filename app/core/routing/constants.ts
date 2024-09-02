@@ -15,3 +15,13 @@ export const mimeType = {
   ".eot": "application/vnd.ms-fontobject",
   ".ttf": "application/x-font-ttf",
 };
+export const statusMessages: Record<number, string> = {
+  200: "OK",
+  201: "Created",
+  204: "No Content",
+  400: "Bad Request",
+  401: "Unauthorized",
+  403: "Forbidden",
+  404: "Not Found",
+  500: "Internal Error",
+};

@@ -1,7 +1,7 @@
 import * as path from "path";
-import Table from "./_Table.js";
+import Table from "./Table.js";
 import type { FileSystemI } from "../lib/fileSystem.js";
-import { createArrFromCSVLine, createCSVRow } from "./_utils.js";
+import { createArrFromCSVLine, createCSVRow } from "./utils.js";
 
 export class Database {
   private databaseName: string;
@@ -20,11 +20,11 @@ export class Database {
     tableName: string,
     columns: [...ColumnTypes]
   ): Table<typeof columns> {
-    const tableFilePath = path.join(this.dbDirPath, `${tableName}.csv`);
-
     if (this.tables[tableName]) {
       return this.tables[tableName] as Table<typeof columns>;
     }
+
+    const tableFilePath = path.join(this.dbDirPath, `${tableName}.csv`);
 
     const table = new Table(tableName, tableFilePath, columns, this.fs);
     const header = createCSVRow(table.columns);

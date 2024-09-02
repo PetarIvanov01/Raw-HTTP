@@ -1,4 +1,4 @@
-import type { HttpHandler } from "../types.d.js";
+import type { HttpHandler } from "../../types.js";
 
 export class RouteHandler {
   private routes: {
