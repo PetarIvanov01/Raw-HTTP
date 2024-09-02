@@ -4,8 +4,15 @@ function parser() {
   return {
     json: () => (req: Request, res: Response) => {
       if (req.headers["content-type"] === "application/json") {
-        const body = JSON.parse(req.body);
-        req.body = body;
+        try {
+          const body = JSON.parse(req.body as string);
+          req.body = body;
+        } catch (error) {
+          if (error instanceof SyntaxError) {
+            return res.status(400).end(error.message);
+          }
+          return res.status(400).end("Invalid body");
+        }
       }
     },
     urlencoded: () => (req: Request, res: Response) => {
