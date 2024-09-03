@@ -87,9 +87,9 @@ function stringifyHeaders(headers: Partial<RequestHeadersOptions>) {
 }
 
 function createResponse({ headers, statusCode, body }: IHTTPResponse) {
-  return `HTTP/1.1 ${statusMessages[statusCode]}${stringifyHeaders(
-    headers || {}
-  )}\r\n\r\n${body || ""}`;
+  return `HTTP/1.1 ${statusCode} ${
+    statusMessages[statusCode]
+  }${stringifyHeaders(headers || {})}\r\n\r\n${body || ""}`;
 }
 
 interface IHTTPResponse {
