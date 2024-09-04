@@ -17,6 +17,7 @@ export const customFileSystem = {
   closeSync: fs.closeSync,
   rmSync: _,
   // Asynchronous methods
+  readDir: fsPromises.readdir,
   appendFile: fsPromises.appendFile,
   readFile: fsPromises.readFile,
   access: fsPromises.access,

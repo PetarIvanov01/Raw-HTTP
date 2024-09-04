@@ -14,6 +14,7 @@ export const mimeType = {
   ".doc": "application/msword",
   ".eot": "application/vnd.ms-fontobject",
   ".ttf": "application/x-font-ttf",
+  ".map": "application/json",
 };
 export const statusMessages: Record<number, string> = {
   200: "OK",
