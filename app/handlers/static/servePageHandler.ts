@@ -5,7 +5,7 @@ import handleNotFound from "./notFoundHandler.js";
 
 export default async function homePageHandler(req: Request, res: Response) {
   try {
-    const file = await readFileFromPublic("index.html");
+    const file = await readFileFromPublic("index.html.gz", "gz");
 
     if (!file) {
       return handleNotFound(res);

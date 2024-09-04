@@ -16,7 +16,8 @@ export default async function serveStaticFilesHandler(
     return handleNotFound(res);
   }
 
-  const file = await readFileFromPublic(pathname);
+  const file = await readFileFromPublic(pathname, ext);
+
   if (!file) {
     return handleNotFound(res);
   }
