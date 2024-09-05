@@ -6,7 +6,7 @@ import { createArrFromCSVLine, createCSVRow } from "./utils.js";
 export class Database {
   private databaseName: string;
   private dbDirPath: string;
-  private tables: { [key: string]: Table<string[]> } = {};
+  private tables: { [key: string]: Table<any> } = {};
   private fs: FileSystemI;
 
   constructor(databaseName: string, dbDirPath: string, fs: FileSystemI) {
@@ -19,9 +19,9 @@ export class Database {
   public createOrGetTable<ColumnTypes extends readonly string[]>(
     tableName: string,
     columns: [...ColumnTypes]
-  ): Table<typeof columns> {
+  ): Table<[...ColumnTypes]> {
     if (this.tables[tableName]) {
-      return this.tables[tableName] as Table<typeof columns>;
+      return this.tables[tableName] as Table<[...ColumnTypes]>;
     }
 
     const tableFilePath = path.join(this.dbDirPath, `${tableName}.csv`);
