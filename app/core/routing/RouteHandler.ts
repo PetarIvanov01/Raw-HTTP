@@ -1,13 +1,16 @@
 import type { HttpHandler } from "../../types.js";
 
-export class RouteHandler {
-  private routes: {
-    [key: string]: {
-      [method: string]: { paramNames: string[]; handler: HttpHandler };
-    };
-  } = {};
+type RouteMethods = "GET" | "POST" | "PUT" | "DELETE";
 
-  public addRoute(method: "GET" | "POST", path: string, handler: HttpHandler) {
+type RoutesRecord = Record<
+  string,
+  Record<string, { paramNames: string[]; handler: HttpHandler } | undefined>
+>;
+
+export class RouteHandler {
+  private routes: RoutesRecord = {};
+
+  public addRoute(method: RouteMethods, path: string, handler: HttpHandler) {
     const { normalizedPath, paramNames } = parsePath(path);
     if (!this.routes[normalizedPath]) {
       this.routes[normalizedPath] = {};
@@ -17,11 +20,17 @@ export class RouteHandler {
 
   public findRoute(method: string, pathname: string) {
     for (const normalizedPath in this.routes) {
-      const { handler, paramNames } = this.routes[normalizedPath][method] || {};
+      const route = this.routes[normalizedPath][method];
+
+      if (!route) {
+        continue;
+      }
+
       const match = matchPath(normalizedPath, pathname);
+
       if (match) {
-        const params = getParams(match, paramNames);
-        return { handler, params };
+        const params = getParams(match, route.paramNames);
+        return { handler: route.handler, params };
       }
     }
     return null;
