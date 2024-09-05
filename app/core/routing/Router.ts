@@ -40,6 +40,14 @@ export class Router {
     this.routeHandler.addRoute("POST", path, handler);
   }
 
+  public put(path: string, handler: HttpHandler) {
+    this.routeHandler.addRoute("PUT", path, handler);
+  }
+
+  public delete(path: string, handler: HttpHandler) {
+    this.routeHandler.addRoute("DELETE", path, handler);
+  }
+
   public use(handler: HttpHandler) {
     this.middlewareManager.use(handler);
   }
