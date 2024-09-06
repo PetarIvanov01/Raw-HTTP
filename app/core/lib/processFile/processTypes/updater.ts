@@ -2,12 +2,13 @@ import * as path from "path";
 import { customFileSystem as fs } from "../../fileSystem.js";
 import type { UpdaterCallback } from "../types.js";
 
-const tempFilePath = path.join(process.cwd(), "database", "temp.csv");
-
 export async function updater(
   filePath: string,
   callback: UpdaterCallback
 ): Promise<void> {
+  const fileDir = path.dirname(filePath);
+  const tempFilePath = path.join(fileDir, "temp.csv");
+
   const originalFd = await fs.open(filePath, "r");
   const tempFd = await fs.open(tempFilePath, "w+");
 
