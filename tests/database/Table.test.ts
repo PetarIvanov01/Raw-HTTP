@@ -158,11 +158,101 @@ describe("Table class tests", () => {
     expect(exist).toBe(undefined);
   });
 
+  test("should update the table size after updating the row with larger field length", async () => {
+    const { tableTodo } = setupDb();
+    await loadTableWithTodos(tableTodo);
+
+    const description =
+      "This is a much longer description that exceeds the previous description length.";
+    const rowToFind = { id: "3" };
+    const data = { description };
+
+    const tableSizeBeforeUpdate = tableTodo.tableSize;
+    const rowBeforeUpdate = await tableTodo.fetchOneRow({ where: rowToFind });
+
+    await tableTodo.updateRow({ where: rowToFind }, data);
+
+    const tableSizeAfterUpdate = tableTodo.tableSize;
+    const rowAfterUpdate = await tableTodo.fetchOneRow({ where: rowToFind });
+
+    if (!rowBeforeUpdate || !rowAfterUpdate) {
+      throw new Error("Row does not exist");
+    }
+
+    expect(tableSizeAfterUpdate - tableSizeBeforeUpdate).toBe(
+      rowAfterUpdate.description.length - rowBeforeUpdate.description.length
+    );
+  });
+
+  test("should not change the table size when updating a row with the same data", async () => {
+    const { tableTodo } = setupDb();
+    await loadTableWithTodos(tableTodo);
+
+    const rowToFind = { id: "2" };
+    const rowBeforeUpdate = await tableTodo.fetchOneRow({ where: rowToFind });
+
+    if (!rowBeforeUpdate) {
+      throw new Error("Row does not exist");
+    }
+
+    const data = { description: rowBeforeUpdate.description };
+    const tableSizeBeforeUpdate = tableTodo.tableSize;
+
+    await tableTodo.updateRow({ where: rowToFind }, data);
+
+    const tableSizeAfterUpdate = tableTodo.tableSize;
+
+    expect(tableSizeBeforeUpdate).toBe(tableSizeAfterUpdate);
+  });
+
+  test("should throw error when trying to update a non-existent row", async () => {
+    const { tableTodo } = setupDb();
+    await loadTableWithTodos(tableTodo);
+
+    const rowToFind = { id: "9999" }; // Non-existent row ID
+    const data = { description: "Updated description" };
+
+    try {
+      await tableTodo.updateRow({ where: rowToFind }, data);
+    } catch (error: any) {
+      expect(error).toBeInstanceOf(Error);
+    }
+  });
+
+  test("should correctly handle multiple updates to the same row", async () => {
+    const { tableTodo } = setupDb();
+    await loadTableWithTodos(tableTodo);
+
+    const rowToFind = { id: "4" };
+    const initialDescription = "First update";
+    const secondDescription = "Second update with even longer content";
+
+    const tableSizeBeforeUpdate = tableTodo.tableSize;
+
+    await tableTodo.updateRow(
+      { where: rowToFind },
+      { description: initialDescription }
+    );
+    const tableSizeAfterFirstUpdate = tableTodo.tableSize;
+
+    await tableTodo.updateRow(
+      { where: rowToFind },
+      { description: secondDescription }
+    );
+    const tableSizeAfterSecondUpdate = tableTodo.tableSize;
+
+    expect(tableSizeAfterFirstUpdate).toBeLessThan(tableSizeBeforeUpdate);
+    expect(tableSizeAfterSecondUpdate).toBeGreaterThan(
+      tableSizeAfterFirstUpdate
+    );
+  });
+
   test("should throw error if trying to delete not existing row", async () => {
     const { tableTodo } = setupDb();
 
     await loadTableWithTodos(tableTodo);
     const rowToFind = { title: "undefiend" };
+
     try {
       await tableTodo.deleteRow({ where: rowToFind });
     } catch (error: any) {
