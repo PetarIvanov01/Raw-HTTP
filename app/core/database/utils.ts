@@ -10,6 +10,18 @@ export function createCSVRow(row: string[]): string {
   return normalize.join(",") + "\n";
 }
 
+export function createCSVRowFromObject<T extends readonly string[]>(
+  obj: { [key in T[number]]: string },
+  header: [...T]
+): string {
+  const row = header.map((key) => {
+    const field = obj[key];
+    return field.trim();
+  });
+
+  return createCSVRow(row).trim();
+}
+
 export function createObjFromCSVLine<T extends readonly string[]>(
   line: string,
   header: [...T]
