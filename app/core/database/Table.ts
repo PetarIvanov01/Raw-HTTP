@@ -1,6 +1,11 @@
 import type { FileSystemI } from "../lib/fileSystem.js";
 import readFileInChunks from "../lib/readFileInChunks.js";
-import { createCSVRow, createObjFromCSVLine } from "./utils.js";
+import { processFileInChunks } from "../lib/processFile/processFileInChunks.js";
+import {
+  createCSVRow,
+  createCSVRowFromObject,
+  createObjFromCSVLine,
+} from "./utils.js";
 
 type Row<Columns extends readonly string[]> = {
   [Key in Columns[number]]: string;
@@ -49,7 +54,7 @@ export default class Table<Columns extends readonly string[]> {
 
     await this.fs.appendFile(this.tablePath, csvRow);
 
-    this.tableSize += Buffer.byteLength(csvRow);
+    this.syncSize("", csvRow);
 
     return rowWithId;
   }
@@ -60,9 +65,50 @@ export default class Table<Columns extends readonly string[]> {
     if (!byteRange) {
       throw new Error("Row doesn't exist in the table");
     }
+  }
 
-    // Delete it
-    // Update the size
+  public async updateRow(
+    options: { where: Partial<ReturnedRow<ColumnsWithInternalId<Columns>>> },
+    data: Partial<ReturnedRow<ColumnsWithInternalId<Columns>>>
+  ) {
+    const queries = Object.entries(options.where);
+    let isUpdated = false;
+
+    if (queries.length === 0) {
+      return undefined;
+    }
+
+    const updateCallback = (line: string) => {
+      const rowInObj = createObjFromCSVLine(
+        line,
+        this.columns
+      ) as ReturnedRow<Columns>;
+
+      const isMatch = queries.every(
+        ([key, value]) => rowInObj[key as Columns[number]] === value
+      );
+      if (isMatch) {
+        const { id, ...rest } = data;
+        const updatedRow = createCSVRowFromObject(
+          {
+            ...rowInObj,
+            ...rest,
+          },
+          this.columns
+        );
+        this.syncSize(line, updatedRow);
+        isUpdated = true;
+        return updatedRow;
+      }
+      return null;
+    };
+
+    const updateR = processFileInChunks("update", 0);
+    await updateR(this.tablePath, updateCallback);
+
+    if (!isUpdated) {
+      throw new Error("Row doesn't exist");
+    }
   }
 
   public async fetchRows(
@@ -147,7 +193,7 @@ export default class Table<Columns extends readonly string[]> {
       if (isMatch) {
         byteRange = {
           start,
-          // It is two bytes because the /n is 10 in decimal base
+          // Subtract 2 bytes to account for the newline characters (\r\n or \n) at the end of the line
           end: end - 2,
         };
         return true;
@@ -184,6 +230,13 @@ export default class Table<Columns extends readonly string[]> {
     } finally {
       fd.close();
     }
+  }
+
+  private syncSize(oldRow: string, newRow: string) {
+    const bytesOld = Buffer.byteLength(oldRow);
+    const bytesNew = Buffer.byteLength(newRow);
+
+    this.tableSize = this.tableSize - bytesOld + bytesNew;
   }
 
   private generateId() {
@@ -223,7 +276,7 @@ export default class Table<Columns extends readonly string[]> {
       this._idCounter = 0;
       this.fs.writeFileSync(this.tablePath, "");
     } finally {
-      const stat = this.fs.statSync(this.tablePath, { throwIfNoEntry: true });
+      const stat = this.fs.statSync(this.tablePath, { throwIfNoEntry: false });
       if (stat) {
         this.tableSize = stat.size;
       }
