@@ -2,6 +2,7 @@ import { describe, test, expect } from "@jest/globals";
 import {
   createArrFromCSVLine,
   createCSVRow,
+  createCSVRowFromObject,
   createObjFromCSVLine,
 } from "../../app/core/database/utils.js";
 
@@ -122,6 +123,86 @@ describe("Database utils functions tests", () => {
       const line = ",two,three";
       const result = createArrFromCSVLine(line);
       expect(result).toEqual(["", "two", "three"]);
+    });
+  });
+
+  describe("createCSVRowFromObject", () => {
+    test("should create a valid CSV row from an object", () => {
+      const obj = {
+        id: "1",
+        name: "John",
+        email: "john@example.com",
+      };
+
+      const header = ["id", "name", "email"];
+      const csvRow = createCSVRowFromObject(obj, header);
+
+      expect(csvRow).toBe("1,John,john@example.com");
+    });
+
+    test("should trim fields and create a valid CSV row", () => {
+      const obj = {
+        id: "  2  ",
+        name: " Alice  ",
+        email: "   alice@example.com   ",
+      };
+
+      const header = ["id", "name", "email"];
+      const csvRow = createCSVRowFromObject(obj, header);
+
+      expect(csvRow).toBe("2,Alice,alice@example.com");
+    });
+
+    test("should handle empty fields in the object", () => {
+      const obj = {
+        id: "3",
+        name: "",
+        email: "no-email@example.com",
+      };
+
+      const header = ["id", "name", "email"];
+      const csvRow = createCSVRowFromObject(obj, header);
+
+      expect(csvRow).toBe("3,,no-email@example.com");
+    });
+
+    test("should handle special characters like commas and quotes", () => {
+      const obj = {
+        id: "4",
+        name: 'Jane, "Doe"',
+        email: "jane@example.com",
+      };
+
+      const header = ["id", "name", "email"];
+      const csvRow = createCSVRowFromObject(obj, header);
+
+      expect(csvRow).toBe('4,"Jane, ""Doe""",jane@example.com');
+    });
+
+    test("should handle objects with different header order", () => {
+      const obj = {
+        id: "5",
+        email: "jack@example.com",
+        name: "Jack",
+      };
+
+      const header = ["name", "email", "id"];
+      const csvRow = createCSVRowFromObject(obj, header);
+
+      expect(csvRow).toBe("Jack,jack@example.com,5");
+    });
+
+    test("should create an empty CSV row when object fields are empty", () => {
+      const obj = {
+        id: "",
+        name: "",
+        email: "",
+      };
+
+      const header = ["id", "name", "email"];
+      const csvRow = createCSVRowFromObject(obj, header);
+
+      expect(csvRow).toBe(",,");
     });
   });
 });
