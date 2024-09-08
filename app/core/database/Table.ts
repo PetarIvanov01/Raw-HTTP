@@ -60,10 +60,35 @@ export default class Table<Columns extends readonly string[]> {
   }
 
   public async deleteRow(options: { where: Partial<Row<Columns>> }) {
-    const byteRange = await this.findRowByteRange(options.where);
+    const queries = Object.entries(options.where);
+    let isDeleted = false;
 
-    if (!byteRange) {
-      throw new Error("Row doesn't exist in the table");
+    if (queries.length === 0) {
+      return undefined;
+    }
+
+    const deleteCallback = (line: string) => {
+      const rowInObj = createObjFromCSVLine(
+        line,
+        this.columns
+      ) as ReturnedRow<Columns>;
+
+      const isMatch = queries.every(
+        ([key, value]) => rowInObj[key as Columns[number]] === value
+      );
+      if (isMatch) {
+        this.syncSize(line, "");
+        isDeleted = true;
+        return true;
+      }
+      return false;
+    };
+
+    const deleter = processFileInChunks("delete", 0);
+    await deleter(this.tablePath, deleteCallback);
+
+    if (!isDeleted) {
+      throw new Error("Row doesn't exist");
     }
   }
 
@@ -235,6 +260,16 @@ export default class Table<Columns extends readonly string[]> {
   private syncSize(oldRow: string, newRow: string) {
     const bytesOld = Buffer.byteLength(oldRow);
     const bytesNew = Buffer.byteLength(newRow);
+
+    if (newRow === "") {
+      this.tableSize -= bytesOld + 1; // For the /n char;
+      return;
+    }
+
+    if (oldRow === "") {
+      this.tableSize += bytesNew;
+      return;
+    }
 
     this.tableSize = this.tableSize - bytesOld + bytesNew;
   }
