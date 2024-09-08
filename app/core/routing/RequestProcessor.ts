@@ -22,21 +22,21 @@ export class RequestProcessor {
     const route = this.routeHandler.findRoute(method, pathname);
     const response = new HTTPResponse(socket);
 
+    const headers = parser.getRequestHeaders();
+    const body = parser.getRequestBody();
+
+    const request: Request = {
+      pathname,
+      method,
+      extension,
+      headers,
+      body,
+      params: {},
+    };
+
+    this.middlewareManager.callMiddlewares(request, response);
+
     if (route) {
-      const headers = parser.getRequestHeaders();
-      const body = parser.getRequestBody();
-
-      const request: Request = {
-        pathname,
-        method,
-        extension,
-        headers,
-        body,
-        params: {},
-      };
-
-      this.middlewareManager.callMiddlewares(request, response);
-
       request.params = route.params;
       return route.handler(request, response);
     }
