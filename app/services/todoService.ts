@@ -29,3 +29,7 @@ export async function getTodosService() {
   const rows = await todosTable.fetchRows(7);
   return rows;
 }
+
+export async function editTodoService(id: string, todo: ITodo) {
+  await todosTable.updateRow({ where: { id } }, todo);
+}
