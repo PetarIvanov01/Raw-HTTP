@@ -32,6 +32,7 @@ export default async function serveStaticFilesHandler(
         "Content-Type": contentType,
         "Content-Encoding": "gzip",
         "Content-Length": file.byteLength,
+        "Cache-Control": "max-age=31536000, immutable",
       })
       .send(file);
   } catch (error) {
