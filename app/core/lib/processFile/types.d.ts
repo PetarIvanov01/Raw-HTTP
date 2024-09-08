@@ -15,14 +15,9 @@ export type UpdaterType = (
   callback: UpdaterCallback
 ) => Promise<void>;
 
-export type DeleterCallback = (
-  line: string,
-  start: number,
-  end: number
-) => boolean;
+export type DeleterCallback = (line: string) => boolean;
 export type DeleterType = (
   filePath: string,
-  chunkSize: number,
   callback: DeleterCallback
 ) => Promise<void>;
 
