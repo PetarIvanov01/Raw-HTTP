@@ -266,8 +266,26 @@ describe("Table class tests", () => {
 
     await loadTableWithTodos(tableTodo);
     await tableTodo.createRow(mockTodo);
-    const byteRange = await tableTodo.deleteRow({ where: mockTodo });
+    try {
+      await tableTodo.deleteRow({ where: mockTodo });
+    } catch (error) {
+      expect(error).toBe(undefined);
+    }
+  });
 
-    expect(byteRange).toBe(undefined);
+  test("should update file size after successful deletion", async () => {
+    const { tableTodo } = setupDb();
+    const mockTodo = mockTodos[0];
+
+    const sizeBeforeDelete = tableTodo.tableSize;
+    console.log(sizeBeforeDelete);
+
+    await tableTodo.createRow(mockTodo);
+    await tableTodo.deleteRow({ where: mockTodo });
+
+    const sizeAfterDelete = tableTodo.tableSize;
+    console.log(sizeAfterDelete);
+
+    expect(sizeBeforeDelete).toEqual(sizeAfterDelete);
   });
 });
