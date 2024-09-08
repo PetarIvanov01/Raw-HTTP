@@ -59,6 +59,7 @@ export class HTTPResponse {
     if (data) {
       this.write(data);
     }
+    this.writeHead();
     this.socket.end(() => {
       console.log(
         `[INFO] Response sent successfully. Socket closed for ${this.socket.remoteAddress}:${this.socket.remotePort}`
