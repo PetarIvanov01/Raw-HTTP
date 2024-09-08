@@ -37,3 +37,13 @@ export async function readFileFromPublic(
     return null;
   }
 }
+
+export async function getFileStat(filePath: string) {
+  try {
+    const stat = await fs.stat(path.join(STATIC_PATH_DIR, filePath));
+    return stat;
+  } catch (error) {
+    console.log(`[ERROR] Failed to get stat: ${filePath}`, error);
+    return null;
+  }
+}
