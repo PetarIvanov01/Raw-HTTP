@@ -2,10 +2,10 @@ import * as path from "path";
 import { customFileSystem as fs } from "../../fileSystem.js";
 import type { UpdaterCallback } from "../types.js";
 
-export async function updater(
+export const updater = async (
   filePath: string,
   callback: UpdaterCallback
-): Promise<void> {
+): Promise<void> => {
   const fileDir = path.dirname(filePath);
   const tempFilePath = path.join(fileDir, "temp.csv");
 
@@ -78,4 +78,4 @@ export async function updater(
     if (originalFd) await originalFd.close();
     if (tempFd) await tempFd.close();
   }
-}
+};

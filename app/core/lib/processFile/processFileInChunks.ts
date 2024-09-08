@@ -31,6 +31,6 @@ export function processFileInChunks(
   } else if (operation === "update") {
     return updater;
   } else {
-    return deleter.bind(null, startOffset);
+    return deleter;
   }
 }
