@@ -17,6 +17,7 @@ export interface RequestHeadersOptions {
   "content-encoding"?: string;
   connection?: string;
   "accept-encoding"?: string;
+  "if-modified-since"?: string;
 }
 
 export interface Request extends RequestLineOptions {
