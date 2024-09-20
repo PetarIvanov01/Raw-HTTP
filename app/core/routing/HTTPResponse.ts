@@ -60,16 +60,11 @@ export class HTTPResponse {
       this.write(data);
     }
     this.writeHead();
-    this.socket.end(() => {
-      console.log(
-        `[INFO] Response sent successfully. Socket closed for ${this.socket.remoteAddress}:${this.socket.remotePort}`
-      );
-    });
   }
 
   public send(data: Buffer | string) {
     this.writeHead();
-    this.socket.end(data);
+    this.socket.write(data);
   }
 }
 
