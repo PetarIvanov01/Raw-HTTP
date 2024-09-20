@@ -8,24 +8,22 @@ import {
 export async function getTodosHandler(req: Request, res: Response) {
   const todos = await getTodosService();
 
+  const stringifyData = JSON.stringify(todos);
   return res
     .status(200)
     .set({
       "Content-Type": "application/json",
+      "Content-Length": stringifyData.length,
     })
-    .send(JSON.stringify(todos));
+    .send(stringifyData);
 }
 
 export async function createTodoHandler(req: Request, res: Response) {
   try {
     const data = validateCreateTodoBody(req.body);
-
     await createTodoService(data);
 
-    res
-      .status(200)
-      .set("Content-type", "application/json")
-      .end(JSON.stringify(data));
+    res.status(204).end();
   } catch (error: any) {
     res.status(400).end(error.message);
   }
@@ -41,10 +39,7 @@ export async function editTodoHandler(req: Request, res: Response) {
     }
     await editTodoService(todoId, data);
 
-    res
-      .status(200)
-      .set("Content-type", "application/json")
-      .end(JSON.stringify(data));
+    res.status(204).end();
   } catch (error: any) {
     res.status(400).end(error.message);
   }
