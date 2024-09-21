@@ -76,7 +76,6 @@ export class RequestParser {
     const hostHeaders = this.headersString.filter((e) =>
       e.toLowerCase().startsWith("host:")
     );
-    console.log("HOSTS: ", hostHeaders);
 
     if (hostHeaders.length > 1) {
       throw new RequestHeadersError(400);
