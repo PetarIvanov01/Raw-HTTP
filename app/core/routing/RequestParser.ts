@@ -1,5 +1,11 @@
+import { RequestHeadersError, RequestLineError } from "./Errors.js";
 import type { RequestHeadersOptions, RequestLineOptions } from "../../types.js";
-import { mimeType } from "./constants.js";
+import {
+  mimeType,
+  METHODS,
+  MAX_REQUEST_TARGET_LENGTH,
+  HOST_PATTERN,
+} from "./constants.js";
 
 export class RequestParser {
   private rawRequest: string;
@@ -20,7 +26,29 @@ export class RequestParser {
   }
 
   public getRequestLine(): RequestLineOptions {
-    const [method, pathname] = this.requestLine.split(" ");
+    const requestLineParts = this.requestLine.split(" ");
+
+    if (requestLineParts.length !== 3) {
+      throw new RequestLineError(400);
+    }
+
+    const [method, pathname, httpVersion] = requestLineParts;
+
+    if (METHODS.indexOf(method) === -1) {
+      throw new RequestLineError(501);
+    }
+
+    if (pathname.length > MAX_REQUEST_TARGET_LENGTH) {
+      throw new RequestLineError(414);
+    }
+
+    if (/\s/.test(pathname)) {
+      throw new RequestLineError(400);
+    }
+
+    if (httpVersion !== "HTTP/1.1") {
+      throw new RequestLineError(505);
+    }
 
     const regexForExtension = new RegExp(/(?<ext>\.[\w]+)$/);
     let group = pathname.match(regexForExtension)?.groups;
@@ -45,6 +73,15 @@ export class RequestParser {
   }
 
   public getRequestHeaders(): RequestHeadersOptions {
+    const hostHeaders = this.headersString.filter((e) =>
+      e.toLowerCase().startsWith("host:")
+    );
+    console.log("HOSTS: ", hostHeaders);
+
+    if (hostHeaders.length > 1) {
+      throw new RequestHeadersError(400);
+    }
+
     const headers = this.headersString
       .map((e) => {
         return e.split(": ");
@@ -58,6 +95,10 @@ export class RequestParser {
           }),
         {}
       ) as RequestHeadersOptions;
+
+    if (!headers.host || !HOST_PATTERN.test(headers.host)) {
+      throw new RequestHeadersError(400);
+    }
 
     return headers;
   }
