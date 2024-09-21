@@ -24,5 +24,21 @@ export const statusMessages: Record<number, string> = {
   401: "Unauthorized",
   403: "Forbidden",
   404: "Not Found",
+  414: "URI Too Long",
   500: "Internal Error",
+  501: "Not Implemented",
+  505: "HTTP Version Not Supported",
 };
+
+export const METHODS = [
+  "GET",
+  "HEAD",
+  "POST",
+  "PUT",
+  "DELETE",
+  "OPTIONS",
+  "PATCH",
+];
+
+export const MAX_REQUEST_TARGET_LENGTH = 2000;
+export const HOST_PATTERN = /^[a-zA-Z0-9.-]+(:[0-9]{1,5})?$/;
