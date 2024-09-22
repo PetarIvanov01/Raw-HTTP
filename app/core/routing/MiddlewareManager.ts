@@ -1,4 +1,4 @@
-import type { HttpHandler, Request, Response } from "../../types.js";
+import type { HttpHandler } from "../../types.js";
 
 export class MiddlewareManager {
   private middlewares: HttpHandler[] = [];
@@ -7,9 +7,7 @@ export class MiddlewareManager {
     this.middlewares.push(handler);
   }
 
-  public callMiddlewares(req: Request, res: Response) {
-    if (this.middlewares.length > 0) {
-      this.middlewares.forEach((middleware) => middleware(req, res));
-    }
+  public getMiddlewares() {
+    return this.middlewares;
   }
 }
