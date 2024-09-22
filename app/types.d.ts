@@ -30,9 +30,14 @@ export interface RequestStaticFiles extends RequestLineOptions {
   headers: RequestHeadersOptions;
 }
 
+export type NextFunction = (err?) => void;
 export type Socket = net.Socket;
 
-export type HttpHandler = (req: Request, res: Response) => void;
+export type HttpHandler = (
+  req: Request,
+  res: Response,
+  next: (err?) => void
+) => Promise<void> | void;
 
 export type Router = Router;
 export type Response = HTTPResponse;
