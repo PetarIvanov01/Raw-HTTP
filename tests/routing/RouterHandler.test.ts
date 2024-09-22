@@ -24,12 +24,12 @@ describe("RouteHandler", () => {
     const method = "GET";
     const path = "/home";
 
-    routeHandler.addRoute(method, path, mockHandler);
+    routeHandler.addRoute(method, path, [mockHandler]);
 
     const foundRoute = routeHandler.findRoute(method, "/home");
 
     expect(foundRoute).toBeTruthy();
-    expect(foundRoute?.handler).toBe(mockHandler);
+    expect(foundRoute?.handlers[0]).toBe(mockHandler);
     expect(foundRoute?.params).toEqual({});
   });
 
@@ -43,12 +43,12 @@ describe("RouteHandler", () => {
     const method = "GET";
     const path = "/users/:id";
 
-    routeHandler.addRoute(method, path, mockHandler);
+    routeHandler.addRoute(method, path, [mockHandler]);
 
     const foundRoute = routeHandler.findRoute(method, "/users/123");
 
     expect(foundRoute).toBeTruthy();
-    expect(foundRoute?.handler).toBe(mockHandler);
+    expect(foundRoute?.handlers[0]).toBe(mockHandler);
     expect(foundRoute?.params).toEqual({ id: "123" });
   });
 
@@ -56,12 +56,12 @@ describe("RouteHandler", () => {
     const method = "GET";
     const path = "/posts/:postId/comments/:commentId";
 
-    routeHandler.addRoute(method, path, mockHandler);
+    routeHandler.addRoute(method, path, [mockHandler]);
 
     const foundRoute = routeHandler.findRoute(method, "/posts/10/comments/5");
 
     expect(foundRoute).toBeTruthy();
-    expect(foundRoute?.handler).toBe(mockHandler);
+    expect(foundRoute?.handlers[0]).toBe(mockHandler);
     expect(foundRoute?.params).toEqual({ postId: "10", commentId: "5" });
   });
 
@@ -70,16 +70,16 @@ describe("RouteHandler", () => {
     const postHandler: HttpHandler = jest.fn();
     const path = "/posts";
 
-    routeHandler.addRoute("GET", path, getHandler);
-    routeHandler.addRoute("POST", path, postHandler);
+    routeHandler.addRoute("GET", path, [getHandler]);
+    routeHandler.addRoute("POST", path, [postHandler]);
 
     const foundGetRoute = routeHandler.findRoute("GET", "/posts");
     expect(foundGetRoute).toBeTruthy();
-    expect(foundGetRoute?.handler).toBe(getHandler);
+    expect(foundGetRoute?.handlers[0]).toBe(getHandler);
 
     const foundPostRoute = routeHandler.findRoute("POST", "/posts");
     expect(foundPostRoute).toBeTruthy();
-    expect(foundPostRoute?.handler).toBe(postHandler);
+    expect(foundPostRoute?.handlers[0]).toBe(postHandler);
   });
 
   test("should differentiate between HTTP methods v2", () => {
@@ -87,22 +87,22 @@ describe("RouteHandler", () => {
     const postHandler: HttpHandler = jest.fn();
     const path = "/posts";
 
-    routeHandler.addRoute("PUT", path, getHandler);
-    routeHandler.addRoute("DELETE", path, postHandler);
+    routeHandler.addRoute("PUT", path, [getHandler]);
+    routeHandler.addRoute("DELETE", path, [postHandler]);
 
     const foundGetRoute = routeHandler.findRoute("PUT", "/posts");
     expect(foundGetRoute).toBeTruthy();
-    expect(foundGetRoute?.handler).toBe(getHandler);
+    expect(foundGetRoute?.handlers[0]).toBe(getHandler);
 
     const foundPostRoute = routeHandler.findRoute("DELETE", "/posts");
     expect(foundPostRoute).toBeTruthy();
-    expect(foundPostRoute?.handler).toBe(postHandler);
+    expect(foundPostRoute?.handlers[0]).toBe(postHandler);
   });
 
   test("should return null if method doesn't match", () => {
     const path = "/tasks";
 
-    routeHandler.addRoute("GET", path, mockHandler);
+    routeHandler.addRoute("GET", path, [mockHandler]);
 
     const foundRoute = routeHandler.findRoute("POST", "/tasks");
 
