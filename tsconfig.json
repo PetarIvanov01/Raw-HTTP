@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "module": "NodeNext",
+    "target": "ES2018",
     "strict": true,
     "skipLibCheck": true,
     "rootDir": "app",
