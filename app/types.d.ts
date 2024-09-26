@@ -30,7 +30,7 @@ export interface RequestStaticFiles extends RequestLineOptions {
   headers: RequestHeadersOptions;
 }
 
-export type NextFunction = (err?) => void;
+export type NextFunction = (err?: unknown) => void;
 export type Socket = net.Socket;
 
 export type HttpHandler = (
