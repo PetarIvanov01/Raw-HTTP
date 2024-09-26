@@ -4,18 +4,18 @@ type RouteMethods = "GET" | "POST" | "PUT" | "DELETE";
 
 type RoutesRecord = Record<
   string,
-  Record<string, { paramNames: string[]; handler: HttpHandler } | undefined>
+  Record<string, { paramNames: string[]; handlers: HttpHandler[] } | undefined>
 >;
 
 export class RouteHandler {
   private routes: RoutesRecord = {};
 
-  public addRoute(method: RouteMethods, path: string, handler: HttpHandler) {
+  public addRoute(method: RouteMethods, path: string, handlers: HttpHandler[]) {
     const { normalizedPath, paramNames } = parsePath(path);
     if (!this.routes[normalizedPath]) {
       this.routes[normalizedPath] = {};
     }
-    this.routes[normalizedPath][method] = { handler, paramNames };
+    this.routes[normalizedPath][method] = { handlers, paramNames };
   }
 
   public findRoute(method: string, pathname: string) {
@@ -30,7 +30,7 @@ export class RouteHandler {
 
       if (match) {
         const params = getParams(match, route.paramNames);
-        return { handler: route.handler, params };
+        return { handlers: route.handlers, params };
       }
     }
     return null;
