@@ -1,6 +1,6 @@
-import type { Request, Response } from "../types.js";
+import type { NextFunction, Request, Response } from "../types.js";
 export default function cors() {
-  return (req: Request, res: Response) => {
+  return (req: Request, res: Response, next: NextFunction) => {
     res.set({
       "Access-Control-Allow-Origin": "http://localhost:5173",
       "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
@@ -10,5 +10,6 @@ export default function cors() {
     if (req.method === "OPTIONS") {
       return res.status(204).end();
     }
+    next();
   };
 }

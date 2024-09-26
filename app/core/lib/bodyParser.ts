@@ -1,8 +1,8 @@
-import type { Request, Response } from "../../types.js";
+import type { NextFunction, Request, Response } from "../../types.js";
 
 function parser() {
   return {
-    json: () => (req: Request, res: Response) => {
+    json: () => (req: Request, res: Response, next: NextFunction) => {
       if (req.headers["content-type"] === "application/json") {
         try {
           const body = JSON.parse(req.body as string);
@@ -14,8 +14,9 @@ function parser() {
           return res.status(400).end("Invalid body");
         }
       }
+      next();
     },
-    urlencoded: () => (req: Request, res: Response) => {
+    urlencoded: () => (req: Request, res: Response, next: NextFunction) => {
       if (req.headers["content-type"] === "application/x-www-form-urlencoded") {
         const body = (req.body as string)
           .split("&")
@@ -51,6 +52,7 @@ function parser() {
 
         req.body = body;
       }
+      next();
     },
   };
 }
