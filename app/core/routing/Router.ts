@@ -32,20 +32,20 @@ export class Router {
     this.requestProcessor.processRequest(parser, socket);
   }
 
-  public get(path: string, handler: HttpHandler) {
-    this.routeHandler.addRoute("GET", path, handler);
+  public get(path: string, ...handlers: HttpHandler[]) {
+    this.routeHandler.addRoute("GET", path, handlers);
   }
 
-  public post(path: string, handler: HttpHandler) {
-    this.routeHandler.addRoute("POST", path, handler);
+  public post(path: string, ...handlers: HttpHandler[]) {
+    this.routeHandler.addRoute("POST", path, handlers);
   }
 
-  public put(path: string, handler: HttpHandler) {
-    this.routeHandler.addRoute("PUT", path, handler);
+  public put(path: string, ...handlers: HttpHandler[]) {
+    this.routeHandler.addRoute("PUT", path, handlers);
   }
 
-  public delete(path: string, handler: HttpHandler) {
-    this.routeHandler.addRoute("DELETE", path, handler);
+  public delete(path: string, ...handlers: HttpHandler[]) {
+    this.routeHandler.addRoute("DELETE", path, handlers);
   }
 
   public use(handler: HttpHandler) {
