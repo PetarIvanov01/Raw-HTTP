@@ -59,7 +59,7 @@ export class HTTPResponse {
     if (data) {
       this.write(data);
     }
-    this.writeHead();
+    this.socket.end();
   }
 
   public send(data: Buffer | string) {
